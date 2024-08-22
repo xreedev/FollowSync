@@ -1,0 +1,173 @@
+:root {
+    --background-color: #1A1A1A;
+    --text-color: #F0F0F0;
+    --toggle-bg-color: #333;
+    --toggle-ball-color: #FFF;
+}
+
+body {
+    font-family: "Montserrat", sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    min-height: 100vh;
+    margin: 0;
+    transition: background 0.2s linear;
+}
+
+body.dark {
+    background-color: #ffffff;
+}
+
+body.dark .checkbox-label {
+    background-color: #333;
+}
+
+body.dark .checkbox-label .ball {
+    background-color: #FFF;
+}
+
+.checkbox {
+    opacity: 0;
+    position: absolute;
+}
+
+.checkbox-label {
+    background-color: var(--toggle-bg-color);
+    width: 60px; /* CodePen size */
+    height: 34px; /* CodePen size */
+    border-radius: 50px;
+    position: relative;
+    padding: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.2s linear;
+}
+
+.checkbox-label .fa-moon,
+.checkbox-label .fa-sun {
+    color: var(--toggle-ball-color);
+    font-size: 20px; /* CodePen size */
+}
+
+.checkbox-label .fa-sun {
+    display: none; /* Hidden by default */
+}
+
+.checkbox:checked + .checkbox-label .fa-sun {
+    display: block;
+}
+
+.checkbox:checked + .checkbox-label .fa-moon {
+    display: none;
+}
+
+.checkbox-label .ball {
+    background-color: var(--toggle-ball-color);
+    width: 26px; /* CodePen size */
+    height: 26px; /* CodePen size */
+    position: absolute;
+    left: 4px; /* Adjust position */
+    top: 4px; /* Adjust position */
+    border-radius: 50%;
+    transition: transform 0.2s linear;
+}
+
+.checkbox:checked + .checkbox-label .ball {
+    transform: translateX(26px); /* Adjust for toggle size */
+}
+
+.toggle-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.logo-input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.logo {
+    background-color: var(--background-color);
+    padding: 10px;
+    border-radius: var(--border-radius);
+}
+
+.logo-img {
+    max-width: 120px; /* Adjust size as needed */
+}
+
+input[type="text"] {
+    padding: var(--input-padding);
+    width: 250px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+button {
+    padding: 10px 20px;
+    background-color: var(--button-bg-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: var(--button-hover-bg-color);
+}
+
+.unfollowers-list {
+    margin-top: 20px;
+    max-height: var(--container-max-height);
+    overflow-y: auto;
+    border: 2px solid var(--border-color);
+    padding: 10px;
+    border-radius: var(--border-radius);
+}
+
+.unfollowers-list div {
+    padding: 5px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.unfollowers-list div:last-child {
+    border-bottom: none;
+}
+
+.support {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+}
+
+.support a {
+    color: #292c35;
+    font-size: 32px;
+    backface-visibility: hidden;
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.support a:hover {
+    transform: scale(1.1);
+}
+
+
+.logo-img {
+    width: 120px; /* Adjust size as needed */
+    height: 120px;
+}
+
