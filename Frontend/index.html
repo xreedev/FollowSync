@@ -3,33 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Unfollowers</title>
+    <title>Dark/Light Mode Toggle</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <div class="toggle-container">
-        <input type="checkbox" class="checkbox" id="checkbox">
-        <label for="checkbox" class="checkbox-label">
-            <i class="fas fa-moon"></i>
-            <i class="fas fa-sun"></i>
-            <span class="ball"></span>
-        </label>
-    </div>
     <div class="container">
-        <div class="logo-input-container">
-            <div class="logo"><img src="logo.svg" alt="Logo" class="logo-img"></div>
-            <input type="text" id="instagramId" placeholder="Enter Instagram User ID">
-        </div>
-        <button onclick="showUnfollowers()">Check Unfollowers</button>
-        <div id="unfollowers" class="unfollowers-list"></div>
+        <button id="theme-toggle" aria-label="Toggle dark/light mode">
+            <span id="sun-icon" class="icon">&#9728;</span>
+            <span id="moon-icon" class="icon">&#9790;</span>
+        </button>
     </div>
     <script src="script.js"></script>
-    <script>
-        const checkbox = document.getElementById("checkbox");
-        checkbox.addEventListener("change", () => {
-            document.body.classList.toggle("dark");
-        });
-    </script>
 </body>
 </html>
