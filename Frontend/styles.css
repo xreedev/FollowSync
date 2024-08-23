@@ -1,61 +1,32 @@
-:root {
-    --background-color: white;
-    --text-color: black;
-}
-
-body {
-    margin: 0;
+body,html{
     height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    transition: background-color 0.3s, color 0.3s;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
 }
 
-.container {
-    width: 100%;
+.container{
     height: 100%;
-}
-
-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 24px;
+    width: 100%;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 }
 
-.icon {
-    display: none;
-    font-size: 24px;
+.follower-container{
+    height: 60%;
+    width: 30%;
+    background-color: aqua;
 }
 
-#sun-icon {
-    display: block;
-    color: black;
+.logo-container{
+    height: 35%;
+    margin: auto;
+    width: 35%;
+    border: 2px solid black;
 }
-
-#moon-icon {
-    display: none;
-    color: white;
-}
-
-[data-theme="dark"] {
-    --background-color: black;
-    --text-color: white;
-}
-
-[data-theme="dark"] #sun-icon {
-    display: none;
-}
-
-[data-theme="dark"] #moon-icon {
-    display: block;
+.logo{
+    height: 100%;
+    width: 100%;
+ 
 }
