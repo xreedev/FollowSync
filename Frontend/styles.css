@@ -14,9 +14,11 @@ body,html{
 }
 
 .follower-container{
-    height: 60%;
+    height: 55%;
     width: 30%;
     background-color: aqua;
+    padding: 1%;
+    border-radius: 5px;
 }
 
 .logo-container{
@@ -29,4 +31,32 @@ body,html{
     height: 100%;
     width: 100%;
  
+}
+
+.enter-id-container{
+    background-color: brown;
+    padding: 10% 5% 10% 5%;
+    margin-top: 15px;
+    border-radius: 5px;
+}
+
+.heading{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 45px;
+    margin-top: 10px;
+}
+
+.username-label,.username-input{
+    font-size: 20px;
+    color: aliceblue;
+    display: flex;
+}
+
+.username-input{
+    margin-top: 10px;
+    width: calc(100% - 20px);
+    height: 30px;
+    border-radius: 5px;
 }
