@@ -1,10 +1,13 @@
-import { FormControl, FormLabel, Input} from '@chakra-ui/react'
+import { Button, FormField } from 'semantic-ui-react'
 function UserNameInput() {
     return (
-      <FormControl isRequired>
-  <FormLabel>Enter your Instagram username</FormLabel>
-  <Input placeholder='username' />
-</FormControl>
+      <>
+      <FormField>
+      <label>First Name</label>
+      <input placeholder='First Name' />
+    </FormField>
+    <Button type='submit'>Submit</Button>
+    </>
     )}
 export default UserNameInput;
 
