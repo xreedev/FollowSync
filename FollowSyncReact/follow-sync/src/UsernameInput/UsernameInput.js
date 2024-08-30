@@ -1,12 +1,10 @@
-import { Input, Stack } from '@chakra-ui/react'
-
-function UserNameInput(){
-  return(
-    <Stack spacing={3}>
-  <Input variant='filled' placeholder='Filled' />
-</Stack>
-  );
-};
-
+import { FormControl, FormLabel, Input} from '@chakra-ui/react'
+function UserNameInput() {
+    return (
+      <FormControl isRequired>
+  <FormLabel>Enter your Instagram username</FormLabel>
+  <Input placeholder='username' />
+</FormControl>
+    )}
 export default UserNameInput;
 
