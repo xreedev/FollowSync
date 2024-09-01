@@ -1,6 +1,5 @@
 import React from 'react';
 import { Input, Button, Layout, Row, Col } from 'antd';
-import './App.css';
 
 const { Content } = Layout;
 
