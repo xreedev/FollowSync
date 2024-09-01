@@ -1,11 +1,11 @@
 import './App.css';
-import UserNameInput from './UsernameInput/UsernameInput.js'
+import HomePage from './HomePage/HomePage';
 
 function App() {
   return (
     <>
-    <UserNameInput>
-      </UserNameInput></>
+    <HomePage></HomePage>
+      </>
   );
 }
 
