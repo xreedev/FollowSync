@@ -1,4 +1,0 @@
-instaloader
-fastapi
-uvicorn
-python-dotenv
