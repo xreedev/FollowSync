@@ -8,6 +8,7 @@ __pycache__/
 
 #Frontend
 FollowSyncReact
+FollowSync\FollowSyncReact\follow-sync
 
 # Distribution / packaging
 .Python
