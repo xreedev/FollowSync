@@ -16,7 +16,7 @@ This application provides a FastAPI-based API that allows users to find Instagra
 
 - Python 3.x
 - Instagram account credentials
-- An `.env` file with your Instagram username and password.
+- An `.env` file with your Instagram username and password, handle 2FA id activated.
 
 ### Installation
 
