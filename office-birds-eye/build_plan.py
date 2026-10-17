@@ -28,9 +28,15 @@ for x in list(range(230, 600, 70))+list(range(900, 1270, 70)):
 
 # service rooms
 room(113, 125, 190, 190, "BATH-\nROOM", fc="#dfe9f2", fs=8)
-room(113, 206, 190, 611, "PANTRY", fc="#f6e7cf", rot=90)
-for y in (230, 280, 520, 565):                       # counters
-    desk(154, y, 28, 36)
+room(113, 206, 190, 470, "", fc="#f6e7cf")
+ax.text(172, 338, "PANTRY", rotation=90, ha="center", va="center", fontsize=11, fontweight="bold", color="#2b3039", zorder=20)
+for y in (225, 275, 390, 425):                       # counters
+    desk(122, y, 28, 36)
+
+# server room (same column)
+room(113, 486, 190, 611, "SERVER\nROOM", fc="#e3e6ef", fs=9, ly=510)
+for x in (128, 152):
+    ax.add_patch(Rectangle((x, 545), 20, 55, fc="#4a5160", ec="#2b3039", lw=1, zorder=5))
 
 # MR2 / MR1 (stacked)
 for (y1, y2, lab, ty) in [(115, 220, "MR 2", 130), (220, 345, "MR 1", 236)]:
