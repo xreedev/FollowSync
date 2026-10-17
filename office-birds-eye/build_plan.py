@@ -27,10 +27,10 @@ for x in list(range(230, 600, 70))+list(range(900, 1270, 70)):
     ax.add_patch(Circle((x, 75), 9, fc="#6fae6a", ec="#3f7f3b", zorder=5))
 
 # service rooms
-room(115, 125, 187, 190, "BATH-\nROOM", fc="#dfe9f2", fs=8)
-room(113, 206, 195, 611, "PANTRY", fc="#f6e7cf", rot=90)
+room(113, 125, 190, 190, "BATH-\nROOM", fc="#dfe9f2", fs=8)
+room(113, 206, 190, 611, "PANTRY", fc="#f6e7cf", rot=90)
 for y in (230, 280, 520, 565):                       # counters
-    desk(160, y, 28, 36)
+    desk(154, y, 28, 36)
 
 # MR2 / MR1 (stacked)
 for (y1, y2, lab, ty) in [(115, 220, "MR 2", 130), (220, 345, "MR 1", 236)]:
@@ -72,25 +72,17 @@ room(1133, 500, 1281, 567, "WELCOME\nDESK", fc="#fbe9cf", fs=10)
 room(210, 380, 287, 604, "SICK\nROOM", fc="#f9dede", ly=410, fs=10)
 ax.add_patch(Rectangle((222, 470), 52, 110, fc="#fff", ec="#c98d8d", lw=1.5, zorder=5))
 
-# bays (work benches, chairs both sides)
-def bay(x1, x2, y1, y2, label, narrow=False):
+# bays: 5 people, one side only
+def bay(x1, x2, y1, y2, label, fs=11):
     room(x1, y1, x2, y2, "", fc=ROOM)
-    ax.text((x1+x2)/2, y1+(20 if "\n" in label else 14), label, ha="center", va="center", fontsize=8 if narrow else 11,
-            fontweight="bold", color="#2b3039", zorder=20)
-    cx = (x1+x2)/2
-    n = int((y2-y1-45)//40)
-    for i in range(n):
-        y = y1 + 40 + i*40
-        if narrow:
-            desk(cx-9, y, 18, 30); chair(cx, y+38, 5) if False else None
-        else:
-            desk(cx-9, y, 18, 30); chair(cx-20, y+15); chair(cx+20, y+15)
-room(512, 111, 573, 342, "", fc=ROOM)
-ax.text(542, 125, "BAY 1", ha="center", va="center", fontsize=11, fontweight="bold", color="#2b3039", zorder=20)
-for i in range(5):                                   # 5 people, one side only
-    y = 148 + i*38
-    desk(536, y, 28, 30); chair(526, y+15)
-bay(305, 343, 381, 607, "BAY\n6", narrow=True)
+    ax.text((x1+x2)/2, y1+(20 if "\n" in label else 14), label, ha="center", va="center",
+            fontsize=fs, fontweight="bold", color="#2b3039", zorder=20)
+    w = min(28, x2-x1-26)
+    for i in range(5):
+        y = y1 + 38 + i*37
+        desk(x1+18, y, w, 30); chair(x1+9, y+15, 5)
+bay(512, 573, 111, 342, "BAY 1")
+bay(305, 343, 381, 607, "BAY\n6", fs=8)
 bay(391, 452, 380, 608, "BAY 5")
 bay(489, 550, 375, 607, "BAY 4")
 bay(593, 654, 375, 607, "BAY 3")
