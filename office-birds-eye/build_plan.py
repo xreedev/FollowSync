@@ -45,7 +45,8 @@ room(644, 130, 788, 166, "SOFA", fc="#cfe0f5", fs=10)
 
 # CEO room
 room(860, 115, 982, 212, "CEO\nROOM", fc=ROOM, ly=135)
-desk(885, 158, 70, 28); chair(920, 198)
+for cx in (891, 951):
+    desk(cx-24, 160, 48, 26); chair(cx, 198)
 
 # meeting rooms 4 & 3
 room(1005, 117, 1289, 216, "MEETING ROOM 4", fc=ROOM, ly=127)
@@ -84,7 +85,11 @@ def bay(x1, x2, y1, y2, label, narrow=False):
             desk(cx-9, y, 18, 30); chair(cx, y+38, 5) if False else None
         else:
             desk(cx-9, y, 18, 30); chair(cx-20, y+15); chair(cx+20, y+15)
-bay(512, 573, 111, 342, "BAY 1")
+room(512, 111, 573, 342, "", fc=ROOM)
+ax.text(542, 125, "BAY 1", ha="center", va="center", fontsize=11, fontweight="bold", color="#2b3039", zorder=20)
+for i in range(5):                                   # 5 people, one side only
+    y = 148 + i*38
+    desk(536, y, 28, 30); chair(526, y+15)
 bay(305, 343, 381, 607, "BAY\n6", narrow=True)
 bay(391, 452, 380, 608, "BAY 5")
 bay(489, 550, 375, 607, "BAY 4")
