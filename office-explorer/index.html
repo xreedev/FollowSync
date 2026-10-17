@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Office Explorer</title>
+<style>
+  :root{--bg:#0f1217;--panel:#171b22;--line:#2a313c;--ink:#e8ebf0;--mute:#8f99a8;--accent:#e8832a}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden}
+  #app{display:grid;grid-template-columns:1fr 340px;grid-template-rows:auto 1fr auto;height:100%}
+  header{grid-column:1/3;display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+  header h1{font-size:16px;margin:0;letter-spacing:.3px}
+  header h1 b{color:var(--accent)}
+  header .sp{flex:1}
+  button{font:inherit;color:var(--ink);background:#222833;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+  button:hover{background:#2b3341}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#16110b;font-weight:600}
+  #stage{position:relative;min-height:0}
+  canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
+  aside{background:var(--panel);border-left:1px solid var(--line);padding:14px;overflow:auto}
+  #photo{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:848/356;background:#0b0d11;border:1px solid var(--line);cursor:zoom-in}
+  #photo img{width:100%;height:100%;object-fit:cover;animation:kb 14s ease-in-out infinite alternate;transform-origin:60% 50%}
+  @keyframes kb{from{transform:scale(1)}to{transform:scale(1.14) translate(-2%,-1%)}}
+  #photo .none{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--mute);padding:12px;
+    background:repeating-linear-gradient(45deg,#12161c,#12161c 10px,#161b22 10px,#161b22 20px)}
+  .badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mute);margin-top:8px}
+  .badge.m{color:#74d08a;border-color:#2f5a3b}.badge.a{color:#f0c060;border-color:#6b5320}.badge.n{color:#e07a7a;border-color:#6b2f2f}
+  h2{font-size:18px;margin:12px 0 2px}
+  p{margin:6px 0;color:#c4cad4}
+  .small{font-size:12px;color:var(--mute)}
+  #chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  #chips button{padding:4px 9px;font-size:12px}
+  footer{grid-column:1/3;padding:8px 16px;border-top:1px solid var(--line);background:var(--panel);color:var(--mute);font-size:12px;display:flex;gap:18px;flex-wrap:wrap}
+  kbd{background:#252b36;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;color:var(--ink);font-size:11px}
+  #hud{position:absolute;left:12px;top:12px;background:#0f1217cc;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:12px;pointer-events:none}
+  #zoom{position:absolute;right:12px;top:12px;display:flex;gap:6px}
+  #modal{position:fixed;inset:0;background:#000d;display:none;place-items:center;z-index:9;padding:20px}
+  #modal.on{display:grid}
+  #modal img{max-width:min(1100px,94vw);max-height:80vh;border-radius:10px;border:1px solid var(--line)}
+  #modal .cap{text-align:center;margin-top:10px;color:#c4cad4}
+  #pad{position:absolute;left:12px;bottom:12px;display:none;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,48px);gap:6px}
+  #pad button{padding:0;font-size:18px}
+  @media (pointer:coarse){#pad{display:grid}}
+  @media (max-width:820px){#app{grid-template-columns:1fr;grid-template-rows:auto 1fr auto auto}aside{grid-row:3;border-left:0;border-top:1px solid var(--line);max-height:34vh}footer{grid-row:4;grid-column:1}header{grid-column:1}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1><b>Office</b> Explorer</h1>
+    <span class="small">top-down walkthrough built from the office video</span>
+    <span class="sp"></span>
+    <button id="tourBtn" class="primary">▶ Guided tour</button>
+    <button id="fitBtn">Whole office</button>
+  </header>
+  <div id="stage">
+    <canvas id="c"></canvas>
+    <div id="hud">Walk with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / arrows · click the map to walk there</div>
+    <div id="zoom"><button id="zin">＋</button><button id="zout">－</button></div>
+    <div id="pad"><span></span><button data-k="up">▲</button><span></span><button data-k="left">◀</button><button data-k="down">▼</button><button data-k="right">▶</button></div>
+  </div>
+  <aside>
+    <div id="photo" title="Click to enlarge"><img id="pimg" alt=""><div class="none" id="pnone" style="display:none"></div></div>
+    <span id="pbadge" class="badge"></span>
+    <h2 id="ptitle">Welcome</h2>
+    <p id="pdesc">Walk into a room to see the matching shot from the video.</p>
+    <p class="small" id="pnote"></p>
+    <div id="chips"></div>
+  </aside>
+  <footer>
+    <span><kbd>W A S D</kbd> / arrows move</span><span><kbd>Shift</kbd> run</span><span><kbd>E</kbd> enlarge photo</span>
+    <span><kbd>M</kbd> whole office</span><span>Click map: auto-walk</span>
+    <span>Photos: frames from the Simplogics office video (0:04–0:10, plus one carrom shot)</span>
+  </footer>
+</div>
+<div id="modal"><div><img id="mimg" alt=""><div class="cap" id="mcap"></div></div></div>
+
+<script>
+"use strict";
+/* ============ DATA (same layout as the supplied sketch) ============ */
+const FLOOR=[196,108,1295,608], BALC=[196,46,1290,104];
+const WORLD=[95,30,1310,630];
+const PH={ // photo frames from the video
+  atrium:{src:"img/frame01.jpg",cap:"Atrium walkway and café court (video 0:04)"},
+  recep :{src:"img/frame02.jpg",cap:"Reception with logo wall and curved desk (video 0:05)"},
+  bay1  :{src:"img/frame03.jpg",cap:"Open-plan bay, glass partition on the left (video 0:06)"},
+  bay2  :{src:"img/frame04.jpg",cap:"Open-plan bays under the timber ceiling feature (video 0:07)"},
+  meet1 :{src:"img/frame05.jpg",cap:"Meeting room with whiteboard and teal lounge chairs (video 0:08)"},
+  meet2 :{src:"img/frame06.jpg",cap:"Meeting room with wall TV and whiteboard (video 0:09)"},
+  carrom:{src:"img/carrom.jpg",cap:"Carrom board shot from the video (recreation)"}
+};
+// rooms inside the floor get collision walls. open = sides left without a wall. doors = gaps [side,from,to]
+const ROOMS=[
+ {id:"mr2",name:"Meeting Room 2",r:[320,115,439,220],doors:[["L",150,190]],ph:"meet1",q:"a",txt:"Small meeting room.",note:"Frame is the closest meeting-room shot; exact room not confirmed."},
+ {id:"mr1",name:"Meeting Room 1",r:[320,220,439,345],doors:[["L",265,310]],ph:"meet2",q:"a",txt:"Small meeting room.",note:"Frame is the closest meeting-room shot; exact room not confirmed."},
+ {id:"bay1",name:"Bay 1",r:[512,111,573,342],open:["B"],ph:"bay1",q:"a",txt:"Five seats along one side.",note:"Bay shots in the video do not say which bay they show."},
+ {id:"ceo",name:"CEO Room",r:[860,115,982,212],doors:[["B",895,945]],ph:"bay1",q:"a",txt:"Two desks.",note:"The video shows a glass-fronted room at the head of the bay; this frame is the nearest match, not a confirmed CEO-room shot."},
+ {id:"mr4",name:"Meeting Room 4",r:[1005,117,1289,216],doors:[["L",150,190]],ph:"meet2",q:"a",txt:"Long boardroom table, six seats a side.",note:"Frame shows an 8-seat room with TV; scaled up here to match your sketch."},
+ {id:"mr3",name:"Meeting Room 3",r:[1184,218,1290,403],doors:[["L",295,340]],ph:"meet1",q:"a",txt:"Narrow meeting room.",note:"Closest meeting-room frame."},
+ {id:"hr",name:"HR Department",r:[866,292,1017,579],doors:[["L",400,460]],ph:null,q:"n",txt:"Eight desks.",note:"The video has no shot of this room."},
+ {id:"sick",name:"Sick Room",r:[210,380,287,604],doors:[["T",225,270]],ph:null,q:"n",txt:"A single bed.",note:"The video has no shot of this room."},
+ {id:"bay6",name:"Bay 6",r:[305,381,343,607],open:["T"],ph:"bay2",q:"a",txt:"Five seats along one side.",note:"Bay shots in the video do not say which bay they show."},
+ {id:"bay5",name:"Bay 5",r:[391,380,452,608],open:["T"],ph:"bay2",q:"a",txt:"Five seats along one side.",note:"Bay shots in the video do not say which bay they show."},
+ {id:"bay4",name:"Bay 4",r:[489,375,550,607],open:["T"],ph:"bay2",q:"a",txt:"Five seats along one side.",note:"Bay shots in the video do not say which bay they show."},
+ {id:"bay3",name:"Bay 3",r:[593,375,654,607],open:["T"],ph:"bay1",q:"a",txt:"Five seats along one side.",note:"Bay shots in the video do not say which bay they show."},
+ {id:"bay2",name:"Bay 2",r:[703,376,764,606],open:["T"],ph:"bay1",q:"a",txt:"Five seats along one side.",note:"Bay shots in the video do not say which bay they show."}
+];
+const SIDE=[ // rooms in the left column (no collision walls needed, outside floor)
+ {id:"bath",name:"Bathroom",r:[113,125,190,190],ph:null,q:"n",txt:"Restrooms.",note:"The video has no shot of this room."},
+ {id:"pantry",name:"Pantry",r:[113,206,190,470],ph:"carrom",q:"a",txt:"Counters and break area.",note:"The carrom shot is placed here as a guess: the video does not say where it was filmed."},
+ {id:"server",name:"Server Room",r:[113,486,190,611],ph:null,q:"n",txt:"Two server racks.",note:"The video has no shot of this room."}
+];
+const OTHER=[
+ {id:"balcony",name:"Balcony",r:BALC,ph:"atrium",q:"a",txt:"Long balcony along the top of the floor.",note:"Frame shows the atrium walkway; the balcony itself is not clearly shown."},
+ {id:"welcome",name:"Welcome Desk / Reception",r:[1050,430,1295,608],ph:"recep",q:"m",txt:"Curved reception desk, logo wall and lounge chairs.",note:""},
+ {id:"sofa",name:"Sofa Lounge",r:[620,112,812,190],ph:"meet1",q:"a",txt:"Lounge sofa.",note:"Frame shows the teal lounge chairs seen in a meeting room; used as a stand-in."}
+];
+const ZONES=[...ROOMS,...SIDE,...OTHER];
+const OPENFLOOR={id:"floor",name:"Open workstation floor",ph:"bay2",q:"m",txt:"Dark striped carpet, white-partition desks, LED strip lighting.",note:"Matches the wide shots in the video."};
+const WALK=[ // walkable regions
+ FLOOR,BALC,[113,125,190,190],[113,206,190,470],[113,486,190,611],
+ [186,148,200,178],[186,330,200,370],[186,492,200,532],[585,100,635,112]
+];
+const BLOCK=[]; // [x1,y1,x2,y2]
+const WT=4;
+function addWalls(rm){
+  const [x1,y1,x2,y2]=rm.r, open=rm.open||[], doors=rm.doors||[];
+  const sides={T:[x1,y1,x2,y1,"h"],B:[x1,y2,x2,y2,"h"],L:[x1,y1,x1,y2,"v"],R:[x2,y1,x2,y2,"v"]};
+  for(const s of "TBLR"){
+    if(open.includes(s))continue;
+    const [ax,ay,bx,by,o]=sides[s];
+    let a=o=="h"?ax:ay, b=o=="h"?bx:by;
+    const gaps=doors.filter(d=>d[0]==s).map(d=>[d[1],d[2]]).sort((p,q)=>p[0]-q[0]);
+    const segs=[];let cur=a;
+    for(const g of gaps){ if(g[0]>cur)segs.push([cur,g[0]]); cur=g[1]; }
+    if(cur<b)segs.push([cur,b]);
+    for(const [p,q] of segs){
+      if(o=="h")BLOCK.push([p,ay-WT/2,q,ay+WT/2,"w"]); else BLOCK.push([ax-WT/2,p,ax+WT/2,q,"w"]);
+    }
+  }
+}
+ROOMS.forEach(addWalls);
+// furniture
+const FURN=[]; // {k,x,y,w,h,...}
+function F(k,x,y,w,h,extra){const o=Object.assign({k,x,y,w,h},extra||{});FURN.push(o);BLOCK.push([x,y,x+w,y+h,"f"]);return o}
+for(const [y1,y2] of [[115,220],[220,345]]){const cy=(y1+y2)/2+10;F("table",350,cy-14,58,28)}
+F("table",1060,160,170,30); F("table",1215,275,44,100);
+F("desk",867,160,48,26,{mon:1,dir:"d"}); F("desk",927,160,48,26,{mon:1,dir:"d"});
+for(let r=0;r<4;r++)for(let c=0;c<2;c++)F("desk",885+c*68,345+r*58,46,24,{mon:1,dir:"d"});
+for(const b of ROOMS.filter(r=>r.id.startsWith("bay"))){
+  const [x1,y1,x2,y2]=b.r, w=Math.min(28,x2-x1-26), top=b.id=="bay1"?y1+38:y1+38;
+  for(let i=0;i<5;i++)F("desk",x1+18,top+i*37,w,30,{mon:1,dir:"l"});
+}
+F("bed",222,470,52,110); F("counter",122,225,28,36);F("counter",122,275,28,36);F("counter",122,390,28,36);F("counter",122,425,28,36);
+F("rack",128,545,20,55);F("rack",152,545,20,55);
+F("sofa",644,130,144,36); F("welcome",1133,500,148,67);
+
+/* ============ COLLISION + PATHFINDING ============ */
+const HB=5; // half box
+const inR=(x,y,r)=>x>=r[0]&&x<=r[2]&&y>=r[1]&&y<=r[3];
+function free(px,py,pad=0){
+  const H=HB+pad;
+  for(const [dx,dy] of [[-H,-H],[H,-H],[-H,H],[H,H]]){
+    const x=px+dx,y=py+dy; let ok=false;
+    for(const w of WALK)if(inR(x,y,w)){ok=true;break}
+    if(!ok)return false;
+  }
+  for(const b of BLOCK){ if(px+H>b[0]+.05&&px-H<b[2]-.05&&py+H>b[1]+.05&&py-H<b[3]-.05)return false }
+  return true;
+}
+const CELL=4, GX=Math.ceil((WORLD[2]-WORLD[0])/CELL), GY=Math.ceil((WORLD[3]-WORLD[1])/CELL);
+const grid=new Uint8Array(GX*GY);
+for(let j=0;j<GY;j++)for(let i=0;i<GX;i++)grid[j*GX+i]=free(WORLD[0]+i*CELL+CELL/2,WORLD[1]+j*CELL+CELL/2)?1:0;
+const g2w=(i,j)=>[WORLD[0]+i*CELL+CELL/2,WORLD[1]+j*CELL+CELL/2];
+const w2g=(x,y)=>[Math.floor((x-WORLD[0])/CELL),Math.floor((y-WORLD[1])/CELL)];
+function nearestFree(x,y){
+  let [i,j]=w2g(x,y); if(grid[j*GX+i])return [i,j];
+  for(let r=1;r<40;r++)for(let dj=-r;dj<=r;dj++)for(let di=-r;di<=r;di++){
+    const a=i+di,b=j+dj; if(a<0||b<0||a>=GX||b>=GY)continue;
+    if(Math.max(Math.abs(di),Math.abs(dj))==r&&grid[b*GX+a])return [a,b];
+  }
+  return null;
+}
+function findPath(sx,sy,tx,ty,smooth=true){
+  const s=nearestFree(sx,sy), t=nearestFree(tx,ty); if(!s||!t)return null;
+  const N=GX*GY, g=new Float32Array(N).fill(1e9), from=new Int32Array(N).fill(-1), closed=new Uint8Array(N);
+  const open=[[0,s[1]*GX+s[0]]]; g[s[1]*GX+s[0]]=0; const T=t[1]*GX+t[0];
+  const h=(i)=>{const a=i%GX,b=(i/GX)|0;return Math.hypot(a-t[0],b-t[1])};
+  const D=[[1,0,1],[-1,0,1],[0,1,1],[0,-1,1],[1,1,1.414],[1,-1,1.414],[-1,1,1.414],[-1,-1,1.414]];
+  while(open.length){
+    let bi=0;for(let k=1;k<open.length;k++)if(open[k][0]<open[bi][0])bi=k;
+    const [,cur]=open.splice(bi,1)[0]; if(closed[cur])continue; closed[cur]=1;
+    if(cur==T)break;
+    const ci=cur%GX,cj=(cur/GX)|0;
+    for(const [dx,dy,c] of D){
+      const a=ci+dx,b=cj+dy; if(a<0||b<0||a>=GX||b>=GY)continue; const n=b*GX+a;
+      if(!grid[n]||closed[n])continue;
+      if(dx&&dy&&(!grid[cj*GX+a]||!grid[b*GX+ci]))continue;
+      const ng=g[cur]+c; if(ng<g[n]){g[n]=ng;from[n]=cur;open.push([ng+h(n),n])}
+    }
+  }
+  if(from[T]<0&&T!=s[1]*GX+s[0])return null;
+  const pts=[];for(let n=T;n!=-1;n=from[n]){pts.push(g2w(n%GX,(n/GX)|0))}
+  pts.reverse();
+  // thin out: keep line-of-sight shortcuts
+  const los=(a,b)=>{const d=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(d/3);for(let k=0;k<=n;k++){if(!free(a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n,2.5))return false}return true};
+  const out=[pts[0]];let i=0;
+  while(i<pts.length-1){let j=pts.length-1;if(smooth){while(j>i+1&&!los(pts[i],pts[j]))j--}else{j=Math.min(i+3,j)}out.push(pts[j]);i=j}
+  out.shift(); out.target=[tx,ty]; return out;
+}
+
+/* ============ TEXTURES ============ */
+function mk(w,h,fn){const c=document.createElement("canvas");c.width=w;c.height=h;fn(c.getContext("2d"),w,h);return c}
+const rnd=(()=>{let s=7;return()=>(s=(s*16807)%2147483647)/2147483647})();
+const TEX={
+ carpet:mk(256,256,(x,w,h)=>{x.fillStyle="#3b3940";x.fillRect(0,0,w,h);
+   for(let i=0;i<5000;i++){x.fillStyle=`rgba(${rnd()<.5?255:0},${rnd()<.5?255:0},${rnd()<.5?255:0},.05)`;x.fillRect(rnd()*w,rnd()*h,1.5,1.5)}
+   for(let cx=0;cx<w;cx+=16){x.fillStyle="rgba(24,22,28,.45)";x.fillRect(cx,0,3,h);
+     for(let k=0;k<6;k++){x.fillStyle="rgba(214,120,60,.55)";x.fillRect(cx+4,rnd()*h,1.5,10+rnd()*28)}}}),
+ tile:mk(120,120,(x,w,h)=>{x.fillStyle="#dcd8d0";x.fillRect(0,0,w,h);x.strokeStyle="#c3bfb6";x.lineWidth=2;x.strokeRect(0,0,w,h);
+   for(let i=0;i<500;i++){x.fillStyle="rgba(0,0,0,.025)";x.fillRect(rnd()*w,rnd()*h,2,2)}
+   const g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,"rgba(255,255,255,.35)");g.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=g;x.fillRect(0,0,w,h)}),
+ deck:mk(120,60,(x,w,h)=>{for(let y=0;y<h;y+=10){x.fillStyle=`hsl(30,${28+rnd()*8}%,${40+rnd()*6}%)`;x.fillRect(0,y,w,9);x.fillStyle="rgba(0,0,0,.25)";x.fillRect(0,y+9,w,1)}
+   for(let i=0;i<120;i++){x.fillStyle="rgba(0,0,0,.07)";x.fillRect(rnd()*w,rnd()*h,10,1)}}),
+ meet:mk(128,128,(x,w,h)=>{x.fillStyle="#57544f";x.fillRect(0,0,w,h);for(let i=0;i<2500;i++){x.fillStyle=`rgba(255,255,255,${rnd()*.05})`;x.fillRect(rnd()*w,rnd()*h,1.5,1.5)}}),
+ wood:mk(128,128,(x,w,h)=>{x.fillStyle="#7d6247";x.fillRect(0,0,w,h);for(let y=0;y<h;y+=16){x.fillStyle=`rgba(0,0,0,${.08+rnd()*.08})`;x.fillRect(0,y,w,1.5)}
+   for(let i=0;i<300;i++){x.fillStyle="rgba(0,0,0,.06)";x.fillRect(rnd()*w,rnd()*h,20,1)}})
+};
+let PAT={};
+
+/* ============ RENDER ============ */
+const cv=document.getElementById("c"), ctx=cv.getContext("2d");
+let W=0,H=0,DPR=1,viewW=520,fitMode=false;
+const cam={x:1100,y:520};
+function resize(){
+  DPR=Math.min(2,window.devicePixelRatio||1);
+  const r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;
+  PAT={};for(const k in TEX)PAT[k]=ctx.createPattern(TEX[k],"repeat");
+}
+window.addEventListener("resize",resize);
+const scale=()=>fitMode?Math.min(W/(WORLD[2]-WORLD[0]+30),H/(WORLD[3]-WORLD[1]+30)):W/viewW;
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r)}
+function fillR(r,fill){ctx.fillStyle=fill;ctx.fillRect(r[0],r[1],r[2]-r[0],r[3]-r[1])}
+function shadowRect(x,y,w,h,a=.35,d=3){ctx.fillStyle=`rgba(0,0,0,${a})`;ctx.fillRect(x+d,y+d,w,h)}
+
+function drawWorld(t){
+  // outside
+  ctx.fillStyle="#0c0e12";ctx.fillRect(WORLD[0]-200,WORLD[1]-200,WORLD[2]-WORLD[0]+400,WORLD[3]-WORLD[1]+400);
+  // balcony deck
+  fillR(BALC,PAT.deck);
+  ctx.fillStyle="rgba(120,180,140,.15)";ctx.fillRect(BALC[0],BALC[1],BALC[2]-BALC[0],BALC[3]-BALC[1]);
+  ctx.strokeStyle="#aab3bf";ctx.lineWidth=3;ctx.strokeRect(BALC[0],BALC[1],BALC[2]-BALC[0],BALC[3]-BALC[1]);
+  for(let x=230;x<1270;x+=70){ if(x>560&&x<900)continue; plant(x,75,11,t)}
+  // main floor
+  fillR(FLOOR,PAT.carpet);
+  // reception tile
+  fillR([1050,430,1295,608],PAT.tile);
+  ctx.save();ctx.beginPath();ctx.rect(1050,430,245,178);ctx.clip();
+  // logo wall graphic
+  ctx.restore();
+  // ceiling features: LED strips (glow)
+  ctx.save();ctx.globalCompositeOperation="lighter";
+  for(const [x,y,w] of [[470,360,200],[760,360,230],[470,640-50,0]]){ if(!w)continue }
+  const strips=[[200,350,330],[660,350,330],[460,330,420],[330,540,520],[700,200,200],[780,470,60]];
+  ctx.fillStyle="rgba(120,200,255,.10)";
+  for(const [y0] of [[352],[455],[560]]){ctx.fillRect(210,y0,640,3)}
+  ctx.restore();
+  // ceiling coffer outline
+  ctx.strokeStyle="rgba(214,160,80,.5)";ctx.setLineDash([8,6]);ctx.lineWidth=2;ctx.strokeRect(620,215,210,62);ctx.setLineDash([]);
+  // room floors
+  for(const r of ROOMS){const k=r.id.startsWith("bay")?null:r.id=="sick"?"tile":"meet";if(k){fillR(r.r,PAT[k])}else{ctx.fillStyle="#2f2d34";ctx.fillRect(r.r[0],r.r[1],r.r[2]-r.r[0],r.r[3]-r.r[1])}}
+  fillR([860,115,982,212],PAT.wood);
+  for(const s of SIDE){fillR(s.r,s.id=="pantry"?PAT.tile:s.id=="bath"?PAT.tile:PAT.meet)}
+  ctx.fillStyle="rgba(120,160,210,.18)";ctx.fillRect(113,125,77,65);
+  // bathroom fixtures
+  for(let i=0;i<3;i++){ctx.fillStyle="#f2f4f7";rrect(120+i*24,132,18,22,4);ctx.fill();ctx.strokeStyle="#9aa4b2";ctx.lineWidth=1;ctx.stroke()}
+  for(let i=0;i<2;i++){ctx.fillStyle="#cfd6df";ctx.fillRect(122+i*30,170,22,10)}
+  // reception: logo wall (east edge) + curved desk
+  receptionArt();
+  // room labels
+  ctx.textAlign="center";ctx.textBaseline="middle";ctx.font="600 11px system-ui";
+  for(const z of ZONES){ if(z.id=="welcome"||z.id=="sofa")continue;
+    const [x1,y1,x2,y2]=z.r;ctx.fillStyle="rgba(255,255,255,.55)";
+    const horiz=(x2-x1)>=(y2-y1)*0.7||z.id.startsWith("bay")===false;
+    ctx.save();ctx.translate((x1+x2)/2,z.id.startsWith("bay")?(z.id=="bay1"?y1+14:y1+14):y1+12);
+    if(z.id=="pantry"||z.id=="server"||z.id=="bath"||z.id=="sick"){ctx.font="600 9px system-ui"}
+    ctx.fillText(z.name.replace("Department","Dept").replace(" Room"," Rm").toUpperCase(),0,0);ctx.restore();ctx.font="600 11px system-ui"}
+  // furniture shadows + furniture
+  for(const f of FURN)drawFurn(f,t);
+  // chairs
+  drawChairs();
+  // walls
+  for(const b of BLOCK){ if(b[4]!="w")continue; shadowRect(b[0],b[1],b[2]-b[0],b[3]-b[1],.4,3); }
+  for(const b of BLOCK){ if(b[4]!="w")continue; ctx.fillStyle="#e9ecf0";ctx.fillRect(b[0],b[1],b[2]-b[0],b[3]-b[1]); }
+  // outer walls
+  ctx.strokeStyle="#e9ecf0";ctx.lineWidth=5;
+  ctx.beginPath();ctx.moveTo(196,108);ctx.lineTo(585,108);ctx.moveTo(635,108);ctx.lineTo(1295,108);ctx.lineTo(1295,608);ctx.lineTo(196,608);ctx.lineTo(196,492);ctx.moveTo(196,532);ctx.lineTo(196,370);ctx.moveTo(196,330);ctx.lineTo(196,178);ctx.moveTo(196,148);ctx.lineTo(196,108);ctx.stroke();
+  ctx.lineWidth=4;
+  for(const s of [[113,125,190,190,[148,178]],[113,206,190,470,[330,370]],[113,486,190,611,[492,532]]]){
+    const [x1,y1,x2,y2,d]=s;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y1);ctx.lineTo(x2,d[0]);ctx.moveTo(x2,d[1]);ctx.lineTo(x2,y2);ctx.lineTo(x1,y2);ctx.lineTo(x1,y1);ctx.stroke()}
+  // east windows with blinds
+  for(let y=118;y<600;y+=34){ctx.fillStyle="#aebbcb";ctx.fillRect(1293,y,5,26);ctx.fillStyle="#6f7e92";for(let k=0;k<5;k++)ctx.fillRect(1293,y+k*5,5,1)}
+  // glass for CEO room (front)
+  ctx.fillStyle="rgba(140,210,255,.18)";ctx.fillRect(895,210,50,4);
+}
+function plant(x,y,r,t){
+  ctx.fillStyle="rgba(0,0,0,.3)";ctx.beginPath();ctx.ellipse(x+3,y+4,r,r*.8,0,0,7);ctx.fill();
+  ctx.fillStyle="#7a5b3c";ctx.beginPath();ctx.arc(x,y,r*.75,0,7);ctx.fill();
+  for(let a=0;a<7;a++){const an=a/7*6.28+Math.sin(t/900+x)*.05;ctx.fillStyle=a%2?"#3f8f4f":"#52a862";ctx.beginPath();ctx.ellipse(x+Math.cos(an)*r*.55,y+Math.sin(an)*r*.55,r*.55,r*.28,an,0,7);ctx.fill()}
+}
+function receptionArt(){
+  // logo wall on the east side
+  ctx.fillStyle="#f4f5f7";ctx.fillRect(1288,440,7,160);
+  const pts=[[1262,452],[1280,478],[1258,502],[1282,528],[1262,556],[1282,580]];
+  const cols=["#e8832a","#8a8f98","#f0b95e","#5c616a","#e8832a"];
+  for(let i=0;i<pts.length-1;i++){ctx.fillStyle=cols[i%cols.length];ctx.beginPath();ctx.moveTo(pts[i][0],pts[i][1]);ctx.lineTo(pts[i+1][0],pts[i+1][1]);ctx.lineTo(1294,(pts[i][1]+pts[i+1][1])/2);ctx.closePath();ctx.fill()}
+  ctx.save();ctx.translate(1272,596);ctx.rotate(-Math.PI/2);ctx.fillStyle="#e8832a";ctx.font="700 9px system-ui";ctx.textAlign="left";ctx.fillText("SIMPLOGICS",0,0);ctx.restore();
+  // lounge chairs
+  for(const [x,y] of [[1070,452],[1070,484]]){shadowRect(x-14,y-11,28,22,.3,3);ctx.fillStyle="#6d717a";rrect(x-14,y-11,28,22,7);ctx.fill();ctx.strokeStyle="#44484f";ctx.stroke()}
+  plant(1062,425,10,0);plant(1062,575,10,0);
+  // doormat
+  ctx.fillStyle="#3b3d44";ctx.fillRect(1180,430,50,8);
+}
+function drawFurn(f,t){
+  const {k,x,y,w,h}=f;
+  shadowRect(x,y,w,h,.38,3);
+  if(k=="table"){ctx.fillStyle="#7a5e47";rrect(x,y,w,h,6);ctx.fill();ctx.strokeStyle="#4a3727";ctx.lineWidth=1.5;ctx.stroke();ctx.fillStyle="rgba(255,255,255,.08)";ctx.fillRect(x+4,y+3,w-8,3);
+    for(let i=0;i<Math.floor(w/45);i++){ctx.fillStyle="#222";ctx.beginPath();ctx.arc(x+22+i*45,y+h/2,2.2,0,7);ctx.fill()}}
+  else if(k=="desk"){ctx.fillStyle="#eceff3";ctx.fillRect(x,y,w,h);ctx.strokeStyle="#8c95a3";ctx.lineWidth=1;ctx.strokeRect(x,y,w,h);
+    // monitor + keyboard
+    if(f.dir=="l"){ctx.fillStyle="#14171b";ctx.fillRect(x+w-7,y+h/2-9,3,18);ctx.fillStyle="rgba(120,170,255,.55)";ctx.fillRect(x+w-6.5,y+h/2-8,2,16);ctx.fillStyle="#cfd3da";ctx.fillRect(x+4,y+h/2-6,9,12)}
+    else{ctx.fillStyle="#14171b";ctx.fillRect(x+w/2-9,y+2,18,3);ctx.fillStyle="rgba(120,170,255,.55)";ctx.fillRect(x+w/2-8,y+2.5,16,2);ctx.fillStyle="#cfd3da";ctx.fillRect(x+w/2-6,y+h-11,12,8)}}
+  else if(k=="bed"){ctx.fillStyle="#fff";ctx.fillRect(x,y,w,h);ctx.strokeStyle="#c98d8d";ctx.lineWidth=2;ctx.strokeRect(x,y,w,h);ctx.fillStyle="#f3d3d3";ctx.fillRect(x+4,y+4,w-8,24);ctx.fillStyle="#cde";ctx.fillRect(x+3,y+36,w-6,h-40)}
+  else if(k=="counter"){ctx.fillStyle="#f3f4f6";ctx.fillRect(x,y,w,h);ctx.strokeStyle="#9aa";ctx.strokeRect(x,y,w,h);ctx.fillStyle="#b9c4d0";ctx.beginPath();ctx.arc(x+w/2,y+h/2,6,0,7);ctx.fill()}
+  else if(k=="rack"){ctx.fillStyle="#2c313a";ctx.fillRect(x,y,w,h);for(let i=0;i<10;i++){ctx.fillStyle=(i+Math.floor(t/300))%3?"#2c7a4f":"#e8832a";ctx.fillRect(x+3,y+4+i*5,3,2);ctx.fillStyle="#3b414d";ctx.fillRect(x+8,y+4+i*5,9,2)}}
+  else if(k=="sofa"){ctx.fillStyle="#5fa9d6";rrect(x,y,w,h,10);ctx.fill();ctx.fillStyle="#7bbde3";rrect(x+4,y+3,w-8,14,7);ctx.fill();ctx.strokeStyle="#2f6a8f";ctx.lineWidth=1.5;rrect(x,y,w,h,10);ctx.stroke()}
+  else if(k=="welcome"){ctx.fillStyle="#9fc4d4";rrect(x,y,w,h,12);ctx.fill();ctx.strokeStyle="#5f8798";ctx.lineWidth=2;ctx.stroke();ctx.fillStyle="rgba(255,255,255,.25)";ctx.fillRect(x+10,y+8,w-20,6);ctx.fillStyle="#14171b";ctx.fillRect(x+w-30,y+16,20,12);
+    ctx.fillStyle="#e8832a";ctx.font="700 11px system-ui";ctx.textAlign="center";ctx.fillText("WELCOME DESK",x+w/2-6,y+h-16)}
+}
+function drawChairs(){
+  const chair=(x,y,a=0)=>{ctx.save();ctx.translate(x,y);ctx.rotate(a);ctx.fillStyle="rgba(0,0,0,.3)";ctx.beginPath();ctx.arc(1.5,2,5.5,0,7);ctx.fill();ctx.fillStyle="#1f2228";ctx.beginPath();ctx.arc(0,0,5.5,0,7);ctx.fill();ctx.fillStyle="#323741";ctx.fillRect(-6.5,-3,3,6);ctx.restore()};
+  for(const f of FURN){
+    if(f.k=="table"){const n=Math.floor(f.w/30);for(let i=0;i<n;i++){const x=f.x+(f.w/n)*(i+.5);chair(x,f.y-7,Math.PI/2);chair(x,f.y+f.h+7,-Math.PI/2)}if(f.w<60){chair(f.x-7,f.y+f.h/2,0);chair(f.x+f.w+7,f.y+f.h/2,Math.PI)}}
+    if(f.k=="desk"){ if(f.dir=="l")chair(f.x-8,f.y+f.h/2,0);else chair(f.x+f.w/2,f.y+f.h+9,-Math.PI/2)}
+  }
+  // meeting room 3 table chairs (vertical table)
+  for(const dy of [290,325,360]){chair(1203,dy,0);chair(1272,dy,Math.PI)}
+}
+
+/* ============ PLAYER ============ */
+const P={x:1215,y:470,face:Math.PI,walk:0,moving:false};
+function drawPlayer(){
+  const {x,y,face,walk,moving}=P, sw=moving?Math.sin(walk)*4:0, bob=moving?Math.abs(Math.sin(walk))*.8:0;
+  ctx.save();ctx.translate(x,y);
+  ctx.fillStyle="rgba(0,0,0,.35)";ctx.beginPath();ctx.ellipse(1.5,2.5,9,7,0,0,7);ctx.fill();
+  ctx.rotate(face);
+  ctx.fillStyle="#262a33";ctx.beginPath();ctx.ellipse(sw,3.4,3.6,2.4,0,0,7);ctx.fill();ctx.beginPath();ctx.ellipse(-sw,-3.4,3.6,2.4,0,0,7);ctx.fill();
+  ctx.fillStyle="#e8832a";ctx.beginPath();ctx.ellipse(0,0,5.6,8.6,0,0,7);ctx.fill();
+  ctx.strokeStyle="#9a4f10";ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle="#f1c9a5";ctx.beginPath();ctx.ellipse(-sw*.7,8.4,2.6,2.6,0,0,7);ctx.fill();ctx.beginPath();ctx.ellipse(sw*.7,-8.4,2.6,2.6,0,0,7);ctx.fill();
+  ctx.fillStyle="#fff";ctx.fillRect(1.2,-1.2,3,2.4);
+  ctx.fillStyle="#f1c9a5";ctx.beginPath();ctx.arc(0.5,0,4.4-bob*.3,0,7);ctx.fill();
+  ctx.fillStyle="#1d1a1c";ctx.beginPath();ctx.arc(-1,0,4.6,Math.PI*.45,Math.PI*1.55);ctx.fill();
+  ctx.restore();
+}
+
+/* ============ INPUT / MOVE ============ */
+const keys={};let path=null, tour=null, lastZone=null;
+const kmap={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"};
+addEventListener("keydown",e=>{const k=e.key.toLowerCase();
+  if(kmap[k]){keys[kmap[k]]=true;stopAuto();e.preventDefault()}
+  if(k=="shift")keys.run=true; if(k=="e")toggleModal(); if(k=="m")toggleFit(); if(k=="escape")modal.classList.remove("on")});
+addEventListener("keyup",e=>{const k=e.key.toLowerCase();if(kmap[k])keys[kmap[k]]=false;if(k=="shift")keys.run=false});
+document.querySelectorAll("#pad button").forEach(b=>{const k=b.dataset.k;
+  const on=e=>{keys[k]=true;stopAuto();e.preventDefault()},off=()=>keys[k]=false;
+  b.addEventListener("pointerdown",on);b.addEventListener("pointerup",off);b.addEventListener("pointerleave",off)});
+function stopAuto(){path=null;tour=null;tourBtn.textContent="▶ Guided tour"}
+function s2w(sx,sy){const s=scale();return [cam.x+(sx-W/2)/s,cam.y+(sy-H/2)/s]}
+cv.addEventListener("pointerdown",e=>{const r=cv.getBoundingClientRect();const [wx,wy]=s2w(e.clientX-r.left,e.clientY-r.top);
+  const p=findPath(P.x,P.y,wx,wy);if(p){tour=null;path=p;marker={x:wx,y:wy,t:0}}});
+let marker=null;
+function step(dt){
+  let dx=(keys.right?1:0)-(keys.left?1:0), dy=(keys.down?1:0)-(keys.up?1:0), auto=false;
+  if(!dx&&!dy&&path&&path.length){
+    const [tx,ty]=path[0],d=Math.hypot(tx-P.x,ty-P.y);
+    if(d<3){path.shift();if(!path.length){path=null;if(tour)nextTour()}}else{dx=(tx-P.x)/d;dy=(ty-P.y)/d;auto=true}
+  }
+  P.moving=!!(dx||dy);
+  if(P.moving){
+    const l=Math.hypot(dx,dy);dx/=l;dy/=l;
+    const sp=(keys.run?190:(auto&&tour?105:120))*dt;
+    let nx=P.x+dx*sp,ny=P.y+dy*sp;
+    const ox=P.x,oy=P.y;
+    if(free(nx,P.y))P.x=nx;
+    if(free(P.x,ny))P.y=ny;
+    if(auto){ if(Math.hypot(P.x-ox,P.y-oy)<sp*.2){P.stuck=(P.stuck||0)+dt;if(P.stuck>.25&&path&&path.target){const t=path.target;const np=findPath(P.x,P.y,t[0],t[1],false);if(np)path=np;P.stuck=0}}else P.stuck=0 }
+    const ta=Math.atan2(dy,dx);let da=ta-P.face;while(da>Math.PI)da-=6.283;while(da<-Math.PI)da+=6.283;P.face+=da*Math.min(1,dt*14);
+    P.walk+=dt*(keys.run?16:11);
+  }
+}
+/* ============ TOUR ============ */
+const TOUR=[
+ ["balcony",[610,76],"The atrium and walkway shot opens the video."],
+ ["welcome",[1190,470],"Reception: curved desk and logo wall."],
+ ["floor",[720,300],"The open-plan floor."],
+ ["bay3",[602,440],"Bays run along the bottom of the floor."],
+ ["bay1",[522,230],"Bay 1 hangs from the top wall."],
+ ["mr1",[335,240],"Meeting rooms 1 and 2 on the left."],
+ ["mr4",[1120,200],"Meeting room 4, the long boardroom."],
+ ["hr",[940,500],"HR department."],
+ ["pantry",[160,350],"Pantry in the left column."]
+];
+let tourIdx=0;
+function startTour(){tourIdx=0;tour=true;tourBtn.textContent="■ Stop tour";nextTour(true)}
+function nextTour(first){
+  if(tourIdx>=TOUR.length){stopAuto();return}
+  const [id,pt]=TOUR[tourIdx++];
+  const p=findPath(P.x,P.y,pt[0],pt[1]);
+  if(!p){nextTour();return}
+  path=p;tour=true;
+}
+const tourBtn=document.getElementById("tourBtn");
+tourBtn.onclick=()=>{tour?stopAuto():startTour()};
+
+/* ============ ZONE PANEL ============ */
+const $=id=>document.getElementById(id);
+let current=OPENFLOOR;
+function zoneAt(x,y){
+  // priority: rooms, then sofa/welcome/balcony/side, else open floor
+  for(const z of [...ROOMS,...SIDE]) if(inR(x,y,z.r))return z;
+  for(const z of OTHER) if(inR(x,y,z.r))return z;
+  return inR(x,y,FLOOR)?OPENFLOOR:OPENFLOOR;
+}
+function bayNear(x,y){ // bays: also trigger within 26px in front of the open side
+  for(const b of ROOMS.filter(r=>r.id.startsWith("bay"))){const [x1,y1,x2,y2]=b.r;
+    const r2=b.open[0]=="B"?[x1,y1,x2,y2+26]:[x1,y1-26,x2,y2];if(inR(x,y,r2))return b}
+  return null;
+}
+function setPanel(z){
+  current=z;
+  $("ptitle").textContent=z.name;$("pdesc").textContent=z.txt;$("pnote").textContent=z.note||"";
+  const b=$("pbadge");b.className="badge "+z.q;b.textContent=z.q=="m"?"Matches the video":z.q=="a"?"Approximate match":"No footage";
+  const img=$("pimg"),none=$("pnone");
+  if(z.ph){const p=PH[z.ph];img.style.display="";none.style.display="none";img.src=p.src;img.alt=p.cap;img.dataset.cap=p.cap;
+    img.style.animation="none";void img.offsetWidth;img.style.animation=""}
+  else{img.style.display="none";none.style.display="grid";none.innerHTML="<div><b>No photo for this room</b><br><span class=small>The video never shows it, and no other photos of the office were found online.</span></div>"}
+}
+function toggleModal(){
+  if(modal.classList.contains("on")){modal.classList.remove("on");return}
+  if(!current.ph)return;const p=PH[current.ph];$("mimg").src=p.src;$("mcap").textContent=current.name+" · "+p.cap;modal.classList.add("on");
+}
+const modal=$("modal");modal.onclick=()=>modal.classList.remove("on");$("photo").onclick=toggleModal;
+function toggleFit(){fitMode=!fitMode;$("fitBtn").textContent=fitMode?"Follow me":"Whole office"}
+$("fitBtn").onclick=toggleFit;
+$("zin").onclick=()=>{viewW=Math.max(260,viewW*.8)};$("zout").onclick=()=>{viewW=Math.min(900,viewW*1.25)};
+// fast-travel chips
+const chips=$("chips");
+for(const [lab,pt] of [["Reception",[1190,470]],["Bay 1",[522,230]],["Bay 4",[498,450]],["CEO room",[920,190]],["Boardroom 4",[1120,200]],["HR",[940,500]],["Pantry",[160,350]],["Server room",[160,515]],["Balcony",[610,76]]]){
+  const b=document.createElement("button");b.textContent=lab;b.onclick=()=>{const p=findPath(P.x,P.y,pt[0],pt[1]);if(p){tour=null;path=p}};chips.appendChild(b)}
+
+/* ============ LOOP ============ */
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(.05,(now-last)/1000);last=now;
+  step(dt);
+  const z=bayNear(P.x,P.y)||zoneAt(P.x,P.y);
+  if(z!==lastZone){lastZone=z;setPanel(z)}
+  // camera
+  const s=scale();
+  if(fitMode){cam.x=(WORLD[0]+WORLD[2])/2;cam.y=(WORLD[1]+WORLD[3])/2}
+  else{const tx=Math.max(WORLD[0]+W/s/2-20,Math.min(WORLD[2]-W/s/2+20,P.x)),ty=Math.max(WORLD[1]+H/s/2-20,Math.min(WORLD[3]-H/s/2+20,P.y));
+    cam.x+=(tx-cam.x)*Math.min(1,dt*6);cam.y+=(ty-cam.y)*Math.min(1,dt*6);
+    if(W/s>WORLD[2]-WORLD[0]+40)cam.x=(WORLD[0]+WORLD[2])/2;if(H/s>WORLD[3]-WORLD[1]+40)cam.y=(WORLD[1]+WORLD[3])/2}
+  ctx.setTransform(DPR,0,0,DPR,0,0);ctx.fillStyle="#0c0e12";ctx.fillRect(0,0,W,H);
+  ctx.setTransform(DPR*s,0,0,DPR*s,DPR*(W/2-cam.x*s),DPR*(H/2-cam.y*s));
+  drawWorld(now);
+  if(marker){marker.t+=dt;ctx.strokeStyle=`rgba(232,131,42,${1-marker.t/1.2})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(marker.x,marker.y,4+marker.t*14,0,7);ctx.stroke();if(marker.t>1.2)marker=null}
+  drawPlayer();
+  // vignette in screen space
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  const g=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.35,W/2,H/2,Math.max(W,H)*.75);g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(0,0,0,.55)");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  requestAnimationFrame(frame);
+}
+resize();
+window.__office={step,P,free,findPath,grid,GX,GY,TOUR,get path(){return path},startTour,setPanel,get zone(){return current}};
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
