@@ -66,6 +66,13 @@
   #res{font-size:14px;min-height:40px}
   .carrom{display:flex;gap:14px;flex-wrap:wrap}
   .carrom canvas{width:440px;height:440px;max-width:88vw;max-height:88vw;border-radius:8px;cursor:grab;touch-action:none}
+  .ttt{display:grid;grid-template-columns:repeat(3,88px);gap:6px}
+  .ttt button{height:88px;font-size:42px;font-weight:700;background:#f7f8fa;color:#222;border-color:#bbb}
+  .ttt button:disabled{opacity:1}
+  .stamp{display:inline-block;margin-top:10px;padding:6px 16px;border:4px solid;border-radius:8px;font-weight:800;font-size:22px;letter-spacing:2px;transform:rotate(-7deg);animation:slam .35s ease-out}
+  .stamp.no{color:#d33;border-color:#d33}.stamp.yes{color:#2fbf6a;border-color:#2fbf6a}
+  @keyframes slam{from{transform:rotate(-7deg) scale(2.6);opacity:0}to{transform:rotate(-7deg) scale(1);opacity:1}}
+  .ctl input,.ctl select{background:#20262f;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;flex:1;min-width:0}
   @media (max-width:820px){#app{grid-template-columns:1fr;grid-template-rows:auto 1fr auto auto}aside{grid-row:3;border-left:0;border-top:1px solid var(--line);max-height:30vh}footer{grid-row:4;grid-column:1}header{grid-column:1}}
 </style>
 </head>
@@ -99,7 +106,7 @@
   <footer>
     <span><kbd>W A S D</kbd> / arrows move</span><span><kbd>Shift</kbd> run</span><span><kbd>E</kbd> use machine / switch / board</span>
     <span><kbd>Space</kbd> bonk the nearest worker</span><span><kbd>M</kbd> whole office</span><span>Click map: auto-walk</span>
-    <span>Photos: frames from the Simplogics office video (0:04–0:10, plus one carrom shot)</span>
+    <span>Easter eggs hidden around the office… and one secret code</span><span>Photos: frames from the Simplogics office video (0:04–0:10, plus one carrom shot)</span>
   </footer>
 </div>
 <div id="modal"><div><img id="mimg" alt=""><div class="cap" id="mcap"></div></div></div>
@@ -132,7 +139,7 @@ const ROOMS=[
  {id:"bay6",name:"Bay 6",r:[305,381,343,607],open:["T"],ph:"bay2",q:"a",txt:"Five seats on each side.",note:BAYNOTE},
  {id:"bay5",name:"Bay 5",r:[391,380,452,608],open:["T"],ph:"bay2",q:"a",txt:"Five seats on each side.",note:BAYNOTE},
  {id:"bay4",name:"Bay 4",r:[489,375,550,607],open:["T"],ph:"bay2",q:"a",txt:"Five seats on each side.",note:BAYNOTE},
- {id:"bay3",name:"Bay 3",r:[593,375,654,607],open:["T"],ph:"bay1",q:"a",txt:"Five seats on each side. The king sits in the middle, left.",note:BAYNOTE},
+ {id:"bay3",name:"Bay 3",r:[593,375,654,607],open:["T"],ph:"bay1",q:"a",txt:"Five seats on the right, four on the left: Safar, Sreedev 👑 in the middle, then Anamika and Aswani at the far end.",note:BAYNOTE},
  {id:"bay2",name:"Bay 2",r:[703,376,764,606],open:["T"],ph:"bay1",q:"a",txt:"Five seats on each side.",note:BAYNOTE}
 ];
 const SIDE=[
@@ -185,20 +192,23 @@ for(const b of ROOMS.filter(r=>r.id.startsWith("bay"))){
   for(let i=0;i<5;i++){
     const y=top+i*37;
     F("desk",x1+lane,y,benchW,30,{dir:"b"});
-    SEATS.push({x:x1+lane/2,y:y+15,face:0,room:b.id,side:"L",idx:i},{x:x2-lane/2,y:y+15,face:Math.PI,room:b.id,side:"R",idx:i});
+    if(!(b.id=="bay3"&&i==0))SEATS.push({x:x1+lane/2,y:y+15,face:0,room:b.id,side:"L",idx:i});
+    SEATS.push({x:x2-lane/2,y:y+15,face:Math.PI,room:b.id,side:"R",idx:i});
   }
 }
 F("bed",230,470,52,110);
 F("machine",122,225,28,36);F("counter",122,275,28,36);F("counter",122,390,28,36);F("counter",122,425,28,36);
 F("rack",128,545,20,55);F("rack",152,545,20,55);
-F("sofa",644,130,144,36); F("welcome",1133,500,148,67); F("carrom",692,212,64,64);
+F("sofa",644,130,144,36); F("welcome",1133,500,148,67); F("carrom",692,212,64,64); F("arcade",720,48,24,26);
 // workers
 let seed=11;const R01=()=>(seed=(seed*16807)%2147483647)/2147483647;
 const SHIRT=["#3b6ea5","#8a4f7d","#4f8a6b","#b5654a","#555b6e","#c79a3a","#6a5acd","#2f8f9d","#a34a4a"],HAIR=["#1c1614","#2a1e18","#3a2a20","#0f0f12","#5a3b24"],SKIN=["#f1c9a5","#d9a577","#b97d52","#8d5a3b"];
+const NAMES={bay3L1:"Safar",bay3L2:"Sreedev",bay3L3:"Anamika",bay3L4:"Aswani"};
 for(const s of SEATS){
+  const key=s.room+(s.side||"")+(s.idx??"");
   const king=s.room=="bay3"&&s.side=="L"&&s.idx==2;
   const n={x:s.x,y:s.y,face:s.face,shirt:SHIRT[(R01()*SHIRT.length)|0],hair:HAIR[(R01()*HAIR.length)|0],skin:SKIN[(R01()*SKIN.length)|0],
-    ph:R01()*6.28,hit:0,bonks:0,say:"",sayT:0,king,name:king?"Sreedev":(s.role||""),role:s.role||""};
+    ph:R01()*6.28,hit:0,bonks:0,say:"",sayT:0,king,name:NAMES[key]||s.role||"",role:s.role||"",loop:key=="bay3L3"?"I will leave DAD on Oct 4":"",loopT:1.5};
   if(king){n.shirt="#7a1f3d";n.hair="#1c1614"}
   NPCS.push(n);BLOCK.push([n.x-4,n.y-4,n.x+4,n.y+4,"n"]);
 }
@@ -208,7 +218,12 @@ let serverOn=true, bonks=0;
 const INTERACT=[
  {id:"coffee",label:"E: make a coffee or tea",rect:[122,225,150,261],cx:136,cy:243,r:48,act:()=>openCoffee()},
  {id:"server",label:"E: server switch — turn it "+"OFF",rect:[124,488,156,508],cx:140,cy:499,r:44,act:()=>toggleServer()},
- {id:"carrom",label:"E: play carrom",rect:[692,212,756,276],cx:724,cy:244,r:66,act:()=>openCarrom()}
+ {id:"carrom",label:"E: play carrom",rect:[692,212,756,276],cx:724,cy:244,r:66,act:()=>openCarrom()},
+ {id:"arcade",label:"E: play Snake on the arcade machine",rect:[720,48,744,74],cx:732,cy:88,r:36,act:()=>openSnake()},
+ {id:"board3",label:"E: whiteboard, tic-tac-toe",rect:[1196,388,1278,401],cx:1237,cy:386,r:36,act:()=>openTTT()},
+ {id:"leave",label:"E: submit a leave request to HR",rect:[1004,426,1016,460],cx:1003,cy:443,r:30,act:()=>openLeave()},
+ {id:"nap",label:"E: take a nap on the sofa",rect:[644,130,788,166],cx:716,cy:178,r:46,act:()=>openNap()},
+ {id:"bugs",label:"E: squash bugs on the whiteboard",rect:[322,252,330,318],cx:337,cy:285,r:30,act:()=>openBugs()}
 ];
 
 /* ============ COLLISION + PATHFINDING ============ */
@@ -322,7 +337,7 @@ function drawWorld(t){
     ctx.font=["pantry","server","bath","sick"].includes(z.id)?"600 9px system-ui":"600 11px system-ui";
     ctx.save();ctx.translate((x1+x2)/2,y1+(z.id=="hr"||z.id=="ceo"||z.id.startsWith("mr")?12:14));
     ctx.fillText(z.name.replace("Department","Dept").replace(" Room"," Rm").toUpperCase(),0,0);ctx.restore()}
-  serverPanel(t);
+  serverPanel(t);decor(t);
   for(const f of FURN)drawFurn(f,t);
   drawChairs();
   for(const n of NPCS)drawNPC(n,t);
@@ -363,6 +378,16 @@ function serverPanel(t){
   ctx.fillStyle=serverOn?"#2fbf6a":"#d12b2b";ctx.beginPath();ctx.arc(x+22,serverOn?y+3:y+17,3,0,7);ctx.fill();
   ctx.fillStyle="#cfd6df";ctx.font="700 5px system-ui";ctx.textAlign="center";ctx.fillText(serverOn?"SERVER ON":"SERVER OFF",x+16,y+26);
 }
+function decor(t){
+  // MR3 whiteboard (south wall), MR1 whiteboard (west wall), HR leave box
+  ctx.fillStyle="#f7f8fa";ctx.fillRect(1196,388,82,12);ctx.strokeStyle="#9aa3af";ctx.lineWidth=1;ctx.strokeRect(1196,388,82,12);
+  ctx.strokeStyle="#4a6fa5";ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(1228,389);ctx.lineTo(1228,399);ctx.moveTo(1242,389);ctx.lineTo(1242,399);ctx.moveTo(1214,392);ctx.lineTo(1256,392);ctx.moveTo(1214,396);ctx.lineTo(1256,396);ctx.stroke();
+  ctx.fillStyle="#c93a3a";ctx.font="700 8px system-ui";ctx.textAlign="center";ctx.fillText("X",1235,391);ctx.fillStyle="#2f6b3a";ctx.fillText("O",1249,395);
+  ctx.fillStyle="#f7f8fa";ctx.fillRect(322,252,6,66);ctx.strokeStyle="#9aa3af";ctx.strokeRect(322,252,6,66);
+  ctx.fillStyle="#2f6b3a";for(const y of [262,276,292,306]){ctx.beginPath();ctx.arc(325,y,1.4,0,7);ctx.fill()}
+  ctx.fillStyle="#b93030";ctx.fillRect(1006,428,9,30);ctx.fillStyle="#111";ctx.fillRect(1008,436,5,2);
+  ctx.save();ctx.translate(1011,450);ctx.rotate(-Math.PI/2);ctx.fillStyle="#fff";ctx.font="700 4px system-ui";ctx.textAlign="left";ctx.fillText("LEAVE",0,0);ctx.restore();
+}
 function monitorCol(){return serverOn?"rgba(120,170,255,.6)":"#0a0a0c"}
 function drawFurn(f,t){
   const {k,x,y,w,h}=f;
@@ -387,6 +412,11 @@ function drawFurn(f,t){
   else if(k=="sofa"){ctx.fillStyle="#5fa9d6";rrect(x,y,w,h,10);ctx.fill();ctx.fillStyle="#7bbde3";rrect(x+4,y+3,w-8,14,7);ctx.fill();ctx.strokeStyle="#2f6a8f";ctx.lineWidth=1.5;rrect(x,y,w,h,10);ctx.stroke()}
   else if(k=="welcome"){ctx.fillStyle="#9fc4d4";rrect(x,y,w,h,12);ctx.fill();ctx.strokeStyle="#5f8798";ctx.lineWidth=2;ctx.stroke();ctx.fillStyle="rgba(255,255,255,.25)";ctx.fillRect(x+10,y+8,w-20,6);ctx.fillStyle="#14171b";ctx.fillRect(x+w-30,y+16,20,12);
     ctx.fillStyle="#e8832a";ctx.font="700 11px system-ui";ctx.textAlign="center";ctx.fillText("WELCOME DESK",x+w/2-6,y+h-16)}
+  else if(k=="arcade"){
+    ctx.fillStyle="#1b1e2b";ctx.fillRect(x,y,w,h);ctx.fillStyle="#e8832a";ctx.fillRect(x,y,3,h);ctx.fillRect(x+w-3,y,3,h);
+    ctx.fillStyle="#08130b";ctx.fillRect(x+5,y+3,w-10,11);
+    const sx=Math.floor(t/220)%6;ctx.fillStyle="#6ee08a";for(let i=0;i<4;i++)ctx.fillRect(x+7+((sx+i)%6)*2.4,y+8,2,2);ctx.fillStyle="#e33";ctx.fillRect(x+w-9,y+5,2,2);
+    ctx.fillStyle="#2c3142";ctx.fillRect(x+4,y+16,w-8,7);ctx.fillStyle="#f2c230";ctx.beginPath();ctx.arc(x+8,y+19.5,1.6,0,7);ctx.fill();ctx.fillStyle="#6ac";ctx.beginPath();ctx.arc(x+w-8,y+19.5,1.6,0,7);ctx.fill()}
   else if(k=="carrom"){
     ctx.fillStyle="#6b4425";rrect(x,y,w,h,4);ctx.fill();ctx.fillStyle="#e8cf9a";ctx.fillRect(x+6,y+6,w-12,h-12);
     ctx.strokeStyle="#6b4425";ctx.lineWidth=.8;ctx.strokeRect(x+11,y+11,w-22,h-22);ctx.beginPath();ctx.arc(x+w/2,y+h/2,9,0,7);ctx.stroke();
@@ -406,7 +436,7 @@ function drawChairs(){
 /* ============ WORKERS (NPCs) ============ */
 function drawNPC(n,t){
   const mad=!serverOn, sit=Math.sin(t/650+n.ph);
-  ctx.save();ctx.translate(n.x,n.y);ctx.rotate(n.face);
+  ctx.save();ctx.translate(n.x,n.y+(disco>0?Math.sin(t/90+n.ph)*1.3:0));ctx.rotate(n.face+(disco>0?Math.sin(t/110+n.ph)*.7:0));
   const sq=n.hit>0?1-.3*Math.sin(n.hit/.7*Math.PI):1;
   ctx.fillStyle=n.shirt;ctx.beginPath();ctx.ellipse(-1,0,4.4,8,0,0,7);ctx.fill();
   ctx.strokeStyle="rgba(0,0,0,.35)";ctx.lineWidth=.7;ctx.stroke();
@@ -426,8 +456,9 @@ function drawNPC(n,t){
   ctx.restore();
   // stars when bonked
   if(n.hit>0){for(let i=0;i<3;i++){const a=t/120+i*2.1;ctx.fillStyle="#ffd54a";ctx.font="700 8px system-ui";ctx.textAlign="center";ctx.fillText("★",n.x+Math.cos(a)*9,n.y+Math.sin(a)*9)}}
+  if(disco>0){ctx.font="8px system-ui";ctx.textAlign="center";ctx.globalAlpha=.8;ctx.fillText(["♪","♫","🎵"][(n.ph*3|0)%3],n.x+7,n.y-9-((t/220+n.ph)%5));ctx.globalAlpha=1}
   if(mad&&n.hit<=0){ctx.font="8px system-ui";ctx.textAlign="center";ctx.fillText("💢",n.x+(n.face==0?-2:2),n.y-11+Math.sin(t/90+n.ph)*1.2)}
-  if(n.king||n.role){const lab=n.king?"👑 SREEDEV":n.role;ctx.font="700 6.5px system-ui";const w=ctx.measureText(lab).width+7;
+  if(n.name){const lab=(n.king?"👑 ":"")+n.name.toUpperCase();ctx.font="700 6.5px system-ui";const w=ctx.measureText(lab).width+7;
     ctx.fillStyle=n.king?"#3a2a00e8":"#0f1217d0";rrect(n.x-w/2,n.y-18.5,w,9,3);ctx.fill();ctx.fillStyle=n.king?"#ffd54a":"#cfd6df";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(lab,n.x,n.y-14)}
 }
 function drawBubbles(){
@@ -463,14 +494,15 @@ function beep(f=440,d=.12,type="square",vol=.05,f2){try{AC=AC||new (window.Audio
 const keys={};let path=null, tour=null, lastZone=null, pending=null, paused=false;
 const kmap={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"};
 const $=id=>document.getElementById(id);
+let gameKey=null;
 addEventListener("keydown",e=>{
-  if(paused){if(e.key=="Escape")closeGame();return}
-  const k=e.key.toLowerCase();
+  if(paused){if(e.key=="Escape")closeGame();else if(gameKey)gameKey(e,true);return}
+  const k=e.key.toLowerCase();konami(k);
   if(kmap[k]){keys[kmap[k]]=true;stopAuto();e.preventDefault()}
   if(k=="shift")keys.run=true;
   if(k=="e")useOrPhoto(); if(k==" "||k=="h"){hitNearest();e.preventDefault()}
   if(k=="m")toggleFit(); if(k=="escape")modal.classList.remove("on")});
-addEventListener("keyup",e=>{const k=e.key.toLowerCase();if(kmap[k])keys[kmap[k]]=false;if(k=="shift")keys.run=false});
+addEventListener("keyup",e=>{if(paused){if(gameKey)gameKey(e,false);return}const k=e.key.toLowerCase();if(kmap[k])keys[kmap[k]]=false;if(k=="shift")keys.run=false});
 document.querySelectorAll("#pad button").forEach(b=>{const k=b.dataset.k;
   const on=e=>{keys[k]=true;stopAuto();e.preventDefault()},off=()=>keys[k]=false;
   b.addEventListener("pointerdown",on);b.addEventListener("pointerup",off);b.addEventListener("pointerleave",off)});
@@ -511,7 +543,8 @@ function step(dt){
   if(P.swing>0)P.swing=Math.max(0,P.swing-dt);
 }
 function animateNPCs(dt,t){
-  for(const n of NPCS){if(n.hit>0)n.hit=Math.max(0,n.hit-dt);if(n.sayT>0)n.sayT-=dt}
+  for(const n of NPCS){if(n.hit>0)n.hit=Math.max(0,n.hit-dt);if(n.sayT>0)n.sayT-=dt;
+    if(n.loop){n.loopT-=dt;if(n.loopT<=0&&n.sayT<=0){n.say=n.loop;n.sayT=3.4;n.loopT=7}}}
   if(!serverOn){shoutT-=dt;if(shoutT<=0){shoutT=.5+Math.random()*1.1;const vis=NPCS.filter(n=>Math.hypot(n.x-P.x,n.y-P.y)<340);const n=(vis.length?vis:NPCS)[(Math.random()*(vis.length||NPCS.length))|0];
     if(n.sayT<=0){n.say=SHOUTS[(Math.random()*SHOUTS.length)|0];n.sayT=2.2}}}
 }
@@ -520,7 +553,7 @@ const SHOUTS=["WHO TURNED IT OFF?!","My code!! 😱","I didn't save!","WiFi down
 const OUCH=["Ouch!","Hey!","My head!","Oww!","Why?!"];
 function bonk(n){
   n.hit=.7;n.bonks++;bonks++;$("bonks").textContent=bonks;P.swing=.25;
-  n.say=n.king?"Treason!! 👑":n.bonks>=4?"STOP IT!!":OUCH[(Math.random()*OUCH.length)|0];n.sayT=1.6;
+  n.say=n.king?"Treason!! 👑":n.loop?n.loop+"!!":n.bonks>=4?"STOP IT!!":OUCH[(Math.random()*OUCH.length)|0];n.sayT=1.6;
   beep(260,.14,"square",.08,70);
 }
 function hitNearest(){
@@ -596,13 +629,13 @@ function toggleFit(){fitMode=!fitMode;$("fitBtn").textContent=fitMode?"Follow me
 $("fitBtn").onclick=toggleFit;
 $("zin").onclick=()=>{viewW=Math.max(260,viewW*.8)};$("zout").onclick=()=>{viewW=Math.min(900,viewW*1.25)};
 const chips=$("chips");
-for(const [lab,pt] of [["Reception",[1190,470]],["Bay 1",[542,356]],["Bay 3 👑",[623,362]],["CEO room",[900,196]],["Boardroom 4",[1105,200]],["HR",[940,500]],["Pantry ☕",[165,250]],["Server room",[165,515]],["Carrom",[724,300]],["Balcony",[610,76]]]){
+for(const [lab,pt] of [["Reception",[1190,470]],["Bay 1",[542,356]],["Bay 3 👑",[623,362]],["CEO room",[900,196]],["Boardroom 4",[1105,200]],["HR",[940,500]],["Pantry ☕",[165,250]],["Server room",[165,515]],["Carrom",[724,300]],["Arcade 🕹",[732,90]],["Sofa 🛋",[716,178]],["Balcony",[610,76]]]){
   const b=document.createElement("button");b.textContent=lab;b.onclick=()=>{if(paused)return;const p=findPath(P.x,P.y,pt[0],pt[1]);if(p){tour=null;pending=null;path=p}};chips.appendChild(b)}
 
 /* ============ GAME MODAL ============ */
 const gm=$("gm");let gmStop=null;
-function openGame(title,html,stop){paused=true;for(const k in keys)keys[k]=false;path=null;tour=null;tourBtn.textContent="▶ Guided tour";$("gmTitle").textContent=title;$("gmBody").innerHTML=html;gm.classList.add("on");gmStop=stop||null}
-function closeGame(){if(gmStop)gmStop();gmStop=null;gm.classList.remove("on");$("gmBody").innerHTML="";paused=false;last=performance.now()}
+function openGame(title,html,stop){gameKey=null;paused=true;for(const k in keys)keys[k]=false;path=null;tour=null;tourBtn.textContent="▶ Guided tour";$("gmTitle").textContent=title;$("gmBody").innerHTML=html;gm.classList.add("on");gmStop=stop||null}
+function closeGame(){if(gmStop)gmStop();gmStop=null;gameKey=null;gm.classList.remove("on");$("gmBody").innerHTML="";paused=false;last=performance.now()}
 $("gmClose").onclick=closeGame;
 
 /* ----- Pantry: coffee & tea machine ----- */
@@ -757,11 +790,173 @@ function openCarrom(){
   setup();raf=requestAnimationFrame(loop);
 }
 
+
+/* ============ MORE EASTER-EGG GAMES ============ */
+const bestGet=k=>{try{return +localStorage.getItem(k)||0}catch(e){return 0}};
+const bestSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+
+/* ----- Arcade: Snake ----- */
+function openSnake(){
+  openGame("Arcade · Snake",`<div class="carrom"><canvas id="sn" width="360" height="360"></canvas><div class="ctl">
+    <div class="ord"><b>Snake</b><br>Arrow keys or WASD. Eat the ☕, don't bite yourself.</div>
+    <div class="row"><b>Score <span id="ss">0</span></b><span style="width:auto">Best <b id="sb">${bestGet("snake")}</b></span></div>
+    <div class="row"><button id="sr" class="primary">Restart</button></div>
+    <div class="row"><button data-d="up">▲</button><button data-d="left">◀</button><button data-d="down">▼</button><button data-d="right">▶</button></div>
+    <div id="smsg" class="small"></div></div></div>`,()=>{clearTimeout(tm)});
+  const g=$("sn").getContext("2d"),N=18,C=20;let snake,dir,nd,apple,score,alive,tm;
+  function start(){snake=[{x:8,y:9},{x:7,y:9},{x:6,y:9}];dir={x:1,y:0};nd=dir;score=0;alive=true;place();$("ss").textContent=0;$("smsg").textContent="";clearTimeout(tm);tick()}
+  function place(){do{apple={x:(Math.random()*N)|0,y:(Math.random()*N)|0}}while(snake.some(p=>p.x==apple.x&&p.y==apple.y))}
+  function turn(x,y){if(x!=-dir.x||y!=-dir.y)nd={x,y}}
+  const D={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
+  $("gmBody").querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>turn(...D[b.dataset.d]));
+  gameKey=(e,down)=>{if(!down)return;const m={arrowup:"up",w:"up",arrowdown:"down",s:"down",arrowleft:"left",a:"left",arrowright:"right",d:"right"}[e.key.toLowerCase()];if(m){turn(...D[m]);e.preventDefault()}};
+  function tick(){
+    if(!alive)return;dir=nd;const h={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+    if(h.x<0||h.y<0||h.x>=N||h.y>=N||snake.some(p=>p.x==h.x&&p.y==h.y)){alive=false;beep(120,.4,"sawtooth",.06,50);
+      if(score>bestGet("snake")){bestSet("snake",score);$("sb").textContent=score}$("smsg").textContent="Game over. Press Restart.";draw();return}
+    snake.unshift(h);if(h.x==apple.x&&h.y==apple.y){score++;$("ss").textContent=score;beep(660+score*20,.08,"triangle",.06);place()}else snake.pop();
+    draw();tm=setTimeout(tick,Math.max(55,125-score*3));
+  }
+  function draw(){
+    g.fillStyle="#0b1510";g.fillRect(0,0,360,360);g.strokeStyle="#12261b";g.lineWidth=1;for(let i=0;i<=N;i++){g.beginPath();g.moveTo(i*C,0);g.lineTo(i*C,360);g.moveTo(0,i*C);g.lineTo(360,i*C);g.stroke()}
+    g.font="16px system-ui";g.textAlign="center";g.textBaseline="middle";g.fillText("☕",apple.x*C+10,apple.y*C+11);
+    snake.forEach((p,i)=>{g.fillStyle=i?"#4fc47a":"#9cf2b8";g.beginPath();g.roundRect(p.x*C+1,p.y*C+1,C-2,C-2,5);g.fill()});
+    if(!alive){g.fillStyle="rgba(0,0,0,.55)";g.fillRect(0,0,360,360);g.fillStyle="#fff";g.font="700 24px system-ui";g.fillText("GAME OVER",180,170);g.font="14px system-ui";g.fillText("score "+score,180,198)}
+  }
+  $("sr").onclick=start;start();
+}
+
+/* ----- MR3 whiteboard: tic-tac-toe ----- */
+function openTTT(){
+  openGame("Meeting Room 3 · Whiteboard",`<div class="carrom"><div class="ttt" id="tb">${"<button></button>".repeat(9)}</div><div class="ctl">
+    <div class="ord"><b>Tic-tac-toe</b><br>You are X. The computer is O.</div>
+    <div class="row"><span>Level</span><button id="le">Easy</button><button id="lh" class="on">Hard</button></div>
+    <div class="row"><b>You <span id="tw">0</span></b><span style="width:auto">CPU <b id="tc">0</b></span><span style="width:auto">Draws <b id="td">0</b></span></div>
+    <div class="row"><button id="tr" class="primary">New game</button></div><div id="tm2" class="small"></div></div></div>`);
+  const cells=[...$("tb").children];let b,hard=true,over,wins=[0,0,0];
+  const L=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  const win=(b)=>{for(const l of L)if(b[l[0]]&&b[l[0]]==b[l[1]]&&b[l[0]]==b[l[2]])return b[l[0]];return b.every(Boolean)?"d":null};
+  function mm(b,p){const w=win(b);if(w=="O")return 1;if(w=="X")return -1;if(w=="d")return 0;let best=p=="O"?-2:2;
+    for(let i=0;i<9;i++)if(!b[i]){b[i]=p;const v=mm(b,p=="O"?"X":"O");b[i]="";if(p=="O"?v>best:v<best)best=v}return best}
+  function cpu(){const e=[...Array(9).keys()].filter(i=>!b[i]);if(!hard&&Math.random()<.7)return e[(Math.random()*e.length)|0];
+    let bi=e[0],bv=-2;for(const i of e){b[i]="O";const v=mm(b,"X");b[i]="";if(v>bv){bv=v;bi=i}}return bi}
+  function render(){cells.forEach((c,i)=>{c.textContent=b[i];c.style.color=b[i]=="X"?"#c93a3a":"#2f6b3a";c.disabled=!!b[i]||over})}
+  function end(){const w=win(b);if(!w)return false;over=true;render();
+    if(w=="X"){wins[0]++;$("tm2").textContent="You win! (Sreedev would be proud.)";beep(880,.3,"triangle",.06)}
+    else if(w=="O"){wins[1]++;$("tm2").textContent="CPU wins. Try Easy mode.";beep(150,.3,"sawtooth",.05)}
+    else{wins[2]++;$("tm2").textContent="Draw. Everyone leaves on Oct 10 anyway."}
+    $("tw").textContent=wins[0];$("tc").textContent=wins[1];$("td").textContent=wins[2];return true}
+  cells.forEach((c,i)=>c.onclick=()=>{if(over||b[i])return;b[i]="X";beep(500,.05,"square",.04);if(!end()){b[cpu()]="O";end()}render()});
+  const lv=h=>{hard=h;$("le").classList.toggle("on",!h);$("lh").classList.toggle("on",h);newG()};
+  $("le").onclick=()=>lv(false);$("lh").onclick=()=>lv(true);
+  function newG(){b=Array(9).fill("");over=false;$("tm2").textContent="";render()}
+  $("tr").onclick=newG;newG();
+}
+
+/* ----- HR box: leave request ----- */
+function openLeave(){
+  let tries=0;const dates=["Oct 4","Oct 5","Oct 6","Oct 7","Oct 8","Oct 9","Oct 10","Oct 11","Oct 12"];
+  openGame("HR · Leave request",`<div class="ctl" style="min-width:300px;max-width:420px">
+    <div class="ord"><b>Leave request form</b><br>Fill it in, then drop it in the box.</div>
+    <div class="row"><span>Name</span><input id="ln" value="You"></div>
+    <div class="row"><span>Leave on</span><select id="ld">${dates.map(d=>`<option>${d}</option>`).join("")}</select></div>
+    <div class="row"><span>Reason</span><select id="lr"><option>Family function</option><option>Fever</option><option>Just bored</option><option>Anamika is also leaving</option><option>Sreedev said it is fine</option></select></div>
+    <button id="ls" class="primary big">Submit request</button><div id="lo" style="min-height:100px"></div><div class="small" id="lc">Attempts: 0</div></div>`);
+  $("ls").onclick=()=>{
+    tries++;const d=$("ld").value,i=dates.indexOf(d),who=$("ln").value||"You";let ok=false,msg;
+    if(d=="Oct 4")msg="Anamika already booked Oct 4. One leaver per date.";
+    else if(i<=5)msg="You are part of this team till October 10.";
+    else if(d=="Oct 10")msg="Last day. So close. Ask again tomorrow, surely.";
+    else{ok=true;msg="You may leave DAD now. Surely."}
+    if(!ok&&tries>=5)msg+=" HR has gone for chai.";
+    $("lo").innerHTML=`<div class="stamp ${ok?"yes":"no"}">${ok?"APPROVED":"REJECTED"}</div><p>${who}: ${msg}</p>`;
+    $("lc").textContent="Attempts: "+tries;beep(ok?880:110,.25,ok?"triangle":"square",.07,ok?1320:60);
+  };
+}
+
+/* ----- Sofa: stealth nap ----- */
+function openNap(){
+  openGame("Sofa lounge · Stealth nap",`<div class="cof"><canvas id="np" width="380" height="260"></canvas><div class="ctl">
+    <div class="ord"><b>Stealth nap</b><br>Hold <kbd>Space</kbd> (or the button) to sleep. Wake up when the CEO turns around. Longer naps score higher.</div>
+    <button id="nb" class="primary big">Hold to sleep</button>
+    <div class="row"><b>Nap <span id="nt">0.0</span>s</b><span style="width:auto">Best <b id="nbst">${bestGet("nap").toFixed(1)}</b>s</span></div>
+    <div id="nm" class="small">Waiting…</div><div class="row"><button id="nr">Try again</button></div></div></div>`,()=>{cancelAnimationFrame(raf)});
+  const g=$("np").getContext("2d");let sleeping=false,score=0,caught=false,state="away",st=0,dur=rand(2,4),raf,last2=performance.now(),zs=[];
+  function rand(a,b){return a+Math.random()*(b-a)}
+  const set=v=>{if(!caught)sleeping=v};
+  gameKey=(e,d)=>{if(e.key==" "){set(d);e.preventDefault()}};
+  const nb=$("nb");nb.addEventListener("pointerdown",e=>{set(true);e.preventDefault()});addEventListener("pointerup",()=>set(false));
+  $("nr").onclick=()=>{sleeping=false;score=0;caught=false;state="away";st=0;dur=rand(2,4);$("nm").textContent="Waiting…";$("nt").textContent="0.0"};
+  function loop(now){raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-last2)/1000);last2=now;
+    if(!caught){st+=dt;
+      if(state=="away"&&st>dur){state="warn";st=0;dur=.85;beep(700,.1,"square",.04)}
+      else if(state=="warn"&&st>dur){state="look";st=0;dur=rand(1.2,2.2)}
+      else if(state=="look"&&st>dur){state="away";st=0;dur=rand(1.8,4.2)}
+      if(sleeping){if(state=="look"){caught=true;sleeping=false;$("nm").textContent=`Caught by the CEO after ${score.toFixed(1)}s.`;beep(110,.5,"sawtooth",.07,40);
+          if(score>bestGet("nap")){bestSet("nap",score);$("nbst").textContent=score.toFixed(1)}}
+        else{score+=dt;$("nt").textContent=score.toFixed(1);if(Math.random()<.08)zs.push({x:150+Math.random()*30,y:150,a:1});$("nm").textContent=state=="warn"?"WAKE UP!":"Zzz…"}}
+      else if(!caught)$("nm").textContent=state=="warn"?"He is turning around…":"Waiting…";}
+    for(const z of zs){z.y-=22*dt;z.x+=6*dt;z.a-=.4*dt}zs=zs.filter(z=>z.a>0);
+    g.fillStyle=state=="look"?"#3a1a1a":"#1c222b";g.fillRect(0,0,380,260);
+    g.fillStyle="#2a313c";g.fillRect(0,200,380,60);
+    g.fillStyle="#5fa9d6";g.beginPath();g.roundRect(60,150,200,70,14);g.fill();g.fillStyle="#7bbde3";g.beginPath();g.roundRect(70,140,180,26,12);g.fill();
+    g.fillStyle="#f1c9a5";g.beginPath();g.arc(100,170,14,0,7);g.fill();g.fillStyle="#e8832a";g.beginPath();g.roundRect(112,160,90,22,10);g.fill();
+    g.fillStyle="#222";if(sleeping){g.fillRect(94,168,6,1.5);g.fillRect(104,168,6,1.5)}else{g.beginPath();g.arc(97,168,1.8,0,7);g.arc(106,168,1.8,0,7);g.fill()}
+    g.font="700 16px system-ui";for(const z of zs){g.fillStyle=`rgba(180,220,255,${z.a})`;g.fillText("Z",z.x,z.y)}
+    // CEO at the door
+    const fx=state=="look"?-1:1;g.save();g.translate(310,90);
+    if(state=="look"){g.fillStyle="rgba(255,60,60,.22)";g.beginPath();g.moveTo(-8,0);g.lineTo(-250,-60);g.lineTo(-250,90);g.closePath();g.fill()}
+    g.fillStyle="#2b2f3a";g.beginPath();g.roundRect(-18,10,36,50,10);g.fill();g.fillStyle="#d9a577";g.beginPath();g.arc(0,0,16,0,7);g.fill();
+    g.fillStyle="#111";g.beginPath();g.arc(fx*-5,-2,state=="away"?0:2.2,0,7);g.arc(fx*-11,-2,state=="away"?0:2.2,0,7);g.fill();
+    if(state=="warn"){g.fillStyle="#ffd54a";g.font="700 26px system-ui";g.fillText("!",-4,-26)}
+    g.fillStyle="#cfd6df";g.font="600 11px system-ui";g.textAlign="center";g.fillText("CEO",0,76);g.textAlign="left";g.restore();
+    if(caught){g.fillStyle="rgba(0,0,0,.5)";g.fillRect(0,0,380,260);g.fillStyle="#fff";g.font="700 24px system-ui";g.fillText("CAUGHT!",130,130)}
+  }
+  raf=requestAnimationFrame(loop);
+}
+
+/* ----- MR1 whiteboard: bug squash ----- */
+function openBugs(){
+  openGame("Meeting Room 1 · Bug squash",`<div class="carrom"><canvas id="bg" width="420" height="300" style="width:440px;height:auto;max-width:90vw"></canvas><div class="ctl">
+    <div class="ord"><b>Bug squash</b><br>Click the 🐞 bugs before they crash the build. Do not click the 🦋 feature butterflies. 25 seconds.</div>
+    <div class="row"><b>Squashed <span id="bs">0</span></b><span style="width:auto">Time <b id="bt">25</b></span><span style="width:auto">Best <b id="bb">${bestGet("bugs")}</b></span></div>
+    <div class="row"><button id="br2" class="primary">Start</button></div><div id="bm" class="small"></div></div></div>`,()=>{cancelAnimationFrame(raf)});
+  const cv3=$("bg"),g=cv3.getContext("2d");let bugs=[],score=0,left=0,running=false,spawn=0,raf,last2=performance.now(),puffs=[];
+  window.__bugs=()=>bugs;
+  const lines=["function ship(feature) {","  if (!tests.pass) return;","  deploy(server.prod);","}","// TODO: fix before October 10","const team = ['DAD'];","while (week < 1) work();","leave(); // surely"];
+  const pos=e=>{const r=cv3.getBoundingClientRect();return [(e.clientX-r.left)*420/r.width,(e.clientY-r.top)*300/r.height]};
+  cv3.addEventListener("pointerdown",e=>{if(!running)return;const [x,y]=pos(e);
+    for(let i=bugs.length-1;i>=0;i--){const b=bugs[i];if(Math.hypot(b.x-x,b.y-y)<18){bugs.splice(i,1);puffs.push({x:b.x,y:b.y,t:.4,bad:b.k=="f"});
+      if(b.k=="b"){score++;beep(700+score*10,.06,"triangle",.06)}else{score=Math.max(0,score-2);beep(150,.2,"square",.06)}$("bs").textContent=score;break}}});
+  $("br2").onclick=()=>{bugs=[];score=0;left=25;running=true;spawn=0;puffs=[];$("bs").textContent=0;$("bm").textContent="";$("br2").textContent="Restart"};
+  function loop(now){raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-last2)/1000);last2=now;
+    if(running){left-=dt;spawn-=dt;$("bt").textContent=Math.max(0,left).toFixed(0);
+      if(spawn<=0&&bugs.length<9){spawn=Math.max(.25,.7-score*.01);const e=(Math.random()*4)|0,x=e==0?14:e==1?406:14+Math.random()*392,y=e==2?14:e==3?286:14+Math.random()*272;
+        const a=Math.atan2(150-y,210-x)+(Math.random()-.5);const sp=40+Math.random()*50+score*1.2;bugs.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,k:Math.random()<.2?"f":"b",life:5})}
+      for(const b of bugs){b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;if((b.x<10&&b.vx<0)||(b.x>410&&b.vx>0))b.vx*=-1;if((b.y<10&&b.vy<0)||(b.y>290&&b.vy>0))b.vy*=-1}
+      bugs=bugs.filter(b=>b.life>0);
+      if(left<=0){running=false;bugs=[];if(score>bestGet("bugs")){bestSet("bugs",score);$("bb").textContent=score}$("bm").textContent=`Build shipped with ${score} bugs squashed. ${score>=20?"Legend.":score>=10?"Not bad.":"Keep practicing."}`;beep(520,.3,"triangle",.06,880)}}
+    for(const p of puffs)p.t-=dt;puffs=puffs.filter(p=>p.t>0);
+    g.fillStyle="#f7f8fa";g.fillRect(0,0,420,300);g.fillStyle="#9aa3af";g.font="12px monospace";g.textAlign="left";lines.forEach((l,i)=>g.fillText(l,16,34+i*30));
+    g.textBaseline="middle";g.textAlign="center";g.font="22px system-ui";for(const b of bugs)g.fillText(b.k=="b"?"🐞":"🦋",b.x,b.y);
+    for(const p of puffs){g.fillStyle=p.bad?"rgba(255,80,80,.5)":"rgba(80,200,120,.5)";g.beginPath();g.arc(p.x,p.y,24*(1-p.t/.4)+4,0,7);g.fill()}
+    g.textBaseline="alphabetic";
+    if(!running&&!left){g.fillStyle="rgba(0,0,0,.35)";g.fillRect(0,0,420,300);g.fillStyle="#fff";g.font="700 22px system-ui";g.textAlign="center";g.fillText("Press Start",210,155)}
+  }
+  raf=requestAnimationFrame(loop);
+}
+
+/* ----- Secret code ----- */
+let disco=0,konIdx=0;
+const KON=["arrowup","arrowup","arrowdown","arrowdown","arrowleft","arrowright","arrowleft","arrowright","b","a"];
+function konami(k){konIdx=(k==KON[konIdx])?konIdx+1:(k==KON[0]?1:0);if(konIdx==KON.length){konIdx=0;startDisco()}}
+function startDisco(){disco=14;flashPrompt("🪩 DISCO MODE 🪩");[523,659,784,1047,784,659,523].forEach((f,i)=>setTimeout(()=>beep(f,.16,"triangle",.07),i*130))}
+
 /* ============ LOOP ============ */
 let last=performance.now();
 function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;
-  if(!paused){step(dt);animateNPCs(dt,now)}
+  if(!paused){step(dt);animateNPCs(dt,now);if(disco>0){disco-=dt;if(!P.moving)P.face+=dt*9}}
   if(welcomeT>0){welcomeT-=dt;if(welcomeT<=0)$("welcome").style.display="none"}
   updatePrompt(dt);
   const z=bayNear(P.x,P.y)||zoneAt(P.x,P.y);
@@ -778,12 +973,13 @@ function frame(now){
   drawPlayer();
   drawBubbles();
   ctx.setTransform(DPR,0,0,DPR,0,0);
+  if(disco>0){ctx.globalCompositeOperation="lighter";for(let i=0;i<3;i++){const gx=W*(.5+.4*Math.sin(now/700+i*2.1)),gy=H*(.5+.4*Math.cos(now/900+i*1.7)),gg=ctx.createRadialGradient(gx,gy,0,gx,gy,Math.max(W,H)*.45);gg.addColorStop(0,`hsla(${(now/8+i*120)%360},90%,55%,.35)`);gg.addColorStop(1,"hsla(0,0%,0%,0)");ctx.fillStyle=gg;ctx.fillRect(0,0,W,H)}ctx.globalCompositeOperation="source-over"}
   if(!serverOn){ctx.fillStyle=`rgba(90,0,0,${.16+.08*Math.sin(now/180)})`;ctx.fillRect(0,0,W,H)}
   const g=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.35,W/2,H/2,Math.max(W,H)*.75);g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(0,0,0,.55)");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
   requestAnimationFrame(frame);
 }
 resize();
-window.__office={step,P,free,findPath,grid,GX,GY,TOUR,NPCS,INTERACT,bonk,hitNearest,toggleServer,openCoffee,openCarrom,closeGame,startTour,setPanel,get serverOn(){return serverOn},get bonks(){return bonks},get paused(){return paused},get path(){return path},get zone(){return current}};
+window.__office={konami,startDisco,openSnake,openTTT,openLeave,openNap,openBugs,get disco(){return disco},step,P,free,findPath,grid,GX,GY,TOUR,NPCS,INTERACT,bonk,hitNearest,toggleServer,openCoffee,openCarrom,closeGame,startTour,setPanel,get serverOn(){return serverOn},get bonks(){return bonks},get paused(){return paused},get path(){return path},get zone(){return current}};
 requestAnimationFrame(frame);
 </script>
 </body>
