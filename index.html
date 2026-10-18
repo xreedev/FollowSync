@@ -82,6 +82,7 @@
     <h1><b>Office</b> Explorer</h1>
     <span class="small">top-down walkthrough built from the office video</span>
     <span class="sp"></span>
+    <a class="btn" href="atrium.html" style="font:inherit;color:var(--ink);background:#222833;border:1px solid var(--line);border-radius:8px;padding:6px 12px;text-decoration:none">Atrium map →</a>
     <button id="tourBtn" class="primary">▶ Guided tour</button>
     <button id="fitBtn">Whole office</button>
   </header>
@@ -223,6 +224,7 @@ const INTERACT=[
  {id:"board3",label:"E: whiteboard, tic-tac-toe",rect:[1196,388,1278,401],cx:1237,cy:386,r:36,act:()=>openTTT()},
  {id:"leave",label:"E: submit a leave request to HR",rect:[1004,426,1016,460],cx:1003,cy:443,r:30,act:()=>openLeave()},
  {id:"nap",label:"E: take a nap on the sofa",rect:[644,130,788,166],cx:716,cy:178,r:46,act:()=>openNap()},
+ {id:"stairs",label:"E: take the stairs down to the atrium",rect:[1246,50,1288,100],cx:1262,cy:76,r:34,act:()=>{location.href="atrium.html#fromOffice"}},
  {id:"bugs",label:"E: squash bugs on the whiteboard",rect:[322,252,330,318],cx:337,cy:285,r:30,act:()=>openBugs()}
 ];
 
@@ -379,6 +381,9 @@ function serverPanel(t){
   ctx.fillStyle="#cfd6df";ctx.font="700 5px system-ui";ctx.textAlign="center";ctx.fillText(serverOn?"SERVER ON":"SERVER OFF",x+16,y+26);
 }
 function decor(t){
+  // balcony stairs down to the atrium
+  for(let i=0;i<6;i++){ctx.fillStyle=i%2?"#c9ced6":"#e4e7ec";ctx.fillRect(1246+i*7,50,7,50)}
+  ctx.fillStyle="#e8832a";ctx.font="700 7px system-ui";ctx.textAlign="center";ctx.fillText("ATRIUM ↓",1267,46);
   // MR3 whiteboard (south wall), MR1 whiteboard (west wall), HR leave box
   ctx.fillStyle="#f7f8fa";ctx.fillRect(1196,388,82,12);ctx.strokeStyle="#9aa3af";ctx.lineWidth=1;ctx.strokeRect(1196,388,82,12);
   ctx.strokeStyle="#4a6fa5";ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(1228,389);ctx.lineTo(1228,399);ctx.moveTo(1242,389);ctx.lineTo(1242,399);ctx.moveTo(1214,392);ctx.lineTo(1256,392);ctx.moveTo(1214,396);ctx.lineTo(1256,396);ctx.stroke();
@@ -469,7 +474,7 @@ function drawBubbles(){
 }
 
 /* ============ PLAYER ============ */
-const P={x:1215,y:470,face:Math.PI,walk:0,moving:false,swing:0};
+const P={x:location.hash=="#fromAtrium"?1236:1215,y:location.hash=="#fromAtrium"?76:470,face:Math.PI,walk:0,moving:false,swing:0};
 function drawPlayer(){
   const {x,y,face,walk,moving}=P, sw=moving?Math.sin(walk)*4:0, bob=moving?Math.abs(Math.sin(walk))*.8:0;
   ctx.save();ctx.translate(x,y);
