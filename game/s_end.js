@@ -11,12 +11,12 @@ S.Ending={
   enter(o){
     G.showClock=false;G.hideDlg();G.chapter(0,"");this.t0=G.t;this.sum=o.sum||[];A.setMusic("warm");
     const m=$("mini");m.innerHTML=`<div id="endwrap" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none">
-      <div id="e1" style="font-family:Georgia,serif;font-size:calc(var(--u)*92);color:#fff5e6;opacity:0;transition:opacity 2s;text-shadow:0 0 40px rgba(255,150,90,.6)">October 7</div>
-      <div id="e2" style="font-family:Georgia,serif;font-size:calc(var(--u)*30);color:#ffd9a8;opacity:0;transition:opacity 2s;margin-top:calc(var(--u)*18);line-height:1.5">Of all the ordinary days at Technopark,<br>this is the one I keep replaying.</div>
+      <div id="e1" style="font-family:Georgia,serif;font-size:calc(var(--u)*92);color:#fff5e6;opacity:0;transition:opacity 2s;text-shadow:0 0 40px rgba(255,150,90,.6)">Everyday</div>
+      <div id="e2" style="font-family:Georgia,serif;font-size:calc(var(--u)*30);color:#ffd9a8;opacity:0;transition:opacity 2s;margin-top:calc(var(--u)*18);line-height:1.5">Every ordinary day at Technopark<br>is the one I keep replaying.</div>
       <div id="e3" style="font-family:Georgia,serif;font-size:calc(var(--u)*28);color:#e8dcc8;opacity:0;transition:opacity 2s;margin-top:calc(var(--u)*28);line-height:1.5;font-style:italic">Thank you for the tea, the laps, the waiting,<br>and the ride.</div>
       <div id="e4" style="font-family:Georgia,serif;font-size:calc(var(--u)*30);color:#ffb26b;opacity:0;transition:opacity 2s;margin-top:calc(var(--u)*26)">– Sreedev</div>
-      <div id="e5" class="panel" style="position:relative;opacity:0;transition:opacity 1.5s;margin-top:calc(var(--u)*30);text-align:left;pointer-events:auto;min-width:calc(var(--u)*640)"><h3>Your October 7</h3><div id="sumlist"></div>
-        <div class="row"><button class="btn p" id="eReplay">Replay October 7</button><button class="btn" id="eMenu">Main menu</button></div></div></div>`;
+      <div id="e5" class="panel" style="position:relative;opacity:0;transition:opacity 1.5s;margin-top:calc(var(--u)*30);text-align:left;pointer-events:auto;min-width:calc(var(--u)*640)"><h3>Your day</h3><div id="sumlist"></div>
+        <div class="row"><button class="btn p" id="eReplay">Replay Everyday</button><button class="btn" id="eMenu">Main menu</button></div></div></div>`;
     $("sumlist").innerHTML=this.sum.map(s=>`<p style="margin:calc(var(--u)*5) 0"><b style="color:#ffd166">${s[0]}</b> &nbsp;${s[1]}</p>`).join("");
     const show=(id,ms)=>setTimeout(()=>{const e=$(id);if(e)e.style.opacity=1},G.dev?30:ms);show("e1",400);show("e2",2800);show("e3",5600);show("e4",8000);show("e5",10400);
     $("eReplay").onclick=()=>{A.sfx("start");if(G.begin)G.begin(1,true)};$("eMenu").onclick=()=>{if(G.toTitle)G.toTitle()};

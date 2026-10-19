@@ -1,4 +1,4 @@
-/* ================= STORY: ten chapters of October 7 (top-down, same small characters as the explorer) ================= */
+/* ================= STORY: ten chapters of Everyday (top-down, same small characters as the explorer) ================= */
 (function(){
 "use strict";
 const $=G.$,q=new URLSearchParams(location.search);
@@ -8,7 +8,7 @@ const DEV=!!G.dev;
 
 /* ---------- state + runner (so jumping chapters cancels the old script) ---------- */
 const SEAT=()=>S.SEAT;
-G.fresh=()=>({dish:"Biriyani",changes:4,teaMode:"now",teaMin:0,insta:false,watchTries:1,six30:"balcony",place:"beach",gifts:[],pet:false,gotShell:false,wish:false,mood:0,flowers:0});
+G.fresh=()=>({dish:"Biriyani",changes:4,teaMode:"now",teaMin:0,insta:false,watchTries:1,six30:"balcony",place:"beach",gifts:[],pet:false,gotShell:false,wish:false,mood:0});
 G.state=G.fresh();
 let TOKEN=0;
 function runner(tk){
@@ -165,20 +165,6 @@ async function giftMoment(R,ctx){
   dev.hold=null;
 }
 
-/* ---------- Sreedev's random flowers (about half the chapters) ---------- */
-const FLOWER_ITEMS=[{h:"flowers",n:"red roses",l:["Here. Don't ask. They were just… there.","These are for you. Please don't make a face."]},{h:"jasmine",n:"a jasmine garland",l:["Mulla poo. I bought it before I could talk myself out of it.","I walked past a flower stall. I walked back."]},{h:"flowers",n:"a bunch of marigolds",l:["The pantry vase had these. I'm telling you they were for you.","Marigolds. They match your mood. Sunny, mostly."]}];
-const FLOWER_REPLY=["Where did you even get these?","Sreedev. …Thank you.","Obviously I'm keeping them.","You are very strange. I like it.","Put them down before you drop them. Wait, no. Give."];
-async function flowerMoment(R,ch){
-  if(!G.flowerPlan||!G.flowerPlan[ch])return;
-  const sc=G.scene;if(!sc||!sc.dev||!sc.sree)return;
-  const it=pickR(FLOWER_ITEMS),S_=G.state;
-  sc.sree.hold=it.h;A.sfx("gift");
-  await R.say("SREEDEV",pickR(it.l));
-  sc.sree.hold=null;sc.dev.hold=it.h;A.sfx("heart");const ax=sc.dev.bx||640,ay=(sc.dev.by||320)+10;Art.burst(ax,ay,"petal",14);Art.burst(ax,ay,"heart",8);
-  G.toast("🌹 Sreedev gave you "+it.n);S_.flowers++;
-  await R.say("ANAMIKA",pickR(FLOWER_REPLY));
-  sc.dev.hold=null;
-}
 function skipBtn(fn){clearSkip();const b=document.createElement("button");b.className="btn";b.id="skipb";b.textContent="Skip ▶";b.style.cssText="position:absolute;right:calc(var(--u)*30);top:calc(var(--u)*100);pointer-events:auto";b.onclick=()=>{clearSkip();fn()};$("mini").appendChild(b)}
 function clearSkip(){const b=$("skipb");if(b)b.remove()}
 
@@ -493,7 +479,7 @@ function summary(){
   const gn={jasmine:"jasmine garland",roses:"red roses",box:"a surprise box"+(S_.surprise?` (${S_.surprise})`:""),note:"a handwritten note"+(S_.noteText?` — “${S_.noteText}”`:""),choc:"dark chocolate",shell:"a seashell"};
   return[["Tea","Black. Nothing else. Just how he likes it."],["The watch",`Replied in ${S_.watchTries} ${S_.watchTries===1?"try":"tries"}`],["Lunch",`${S_.dish}, after ${S_.changes} changes of mind`],["Three rounds","Done. He was slower."],
     ["Tea time",S_.teaMode==="wait"?`Made him wait ${S_.teaMin} minutes${S_.insta?" (after a peek at Instagram)":""}`:"Went downstairs at once"],["At 6:30",six],["Evening",place],
-    ["Flowers from Sreedev",S_.flowers?S_.flowers+(S_.flowers===1?" bunch":" bunches"):"None this time"],["Beach mood",S_.mood>=3?"Romantic":S_.mood>=0?"Pleasant":"Ruined, mostly by Sreedev"],["Gifts",S_.gifts.length?S_.gifts.map(g=>gn[g]).join(", "):"None this time"],["Extras","afraid of dogs and fog, both of them"]];
+    ["Beach mood",S_.mood>=3?"Romantic":S_.mood>=0?"Pleasant":"Ruined, mostly by Sreedev"],["Gifts",S_.gifts.length?S_.gifts.map(g=>gn[g]).join(", "):"None this time"],["Extras","afraid of dogs and fog, both of them"]];
 }
 
 /* =====================================================================
@@ -506,11 +492,10 @@ G.begin=async function(from,fresh){
   TOKEN++;const tk=TOKEN,R=runner(tk);
   if(fresh||from===1)G.state=G.fresh();else if(!G.state)G.state=G.fresh();
   resetUI();G.showClock=true;
-  G.flowerPlan={};for(const c of [1,2,3,4,5,6,7,10])G.flowerPlan[c]=Math.random()<.5;
   try{
     for(let i=from;i<=10;i++){
-      await CH[i-1](R);if(tk!==TOKEN)return;await flowerMoment(R,i);if(tk!==TOKEN)return;resetUI();
-      try{localStorage.setItem("oct7_max",Math.max(+localStorage.getItem("oct7_max")||0,i))}catch(e){}
+      await CH[i-1](R);if(tk!==TOKEN)return;resetUI();
+      try{localStorage.setItem("everyday_max",Math.max(+localStorage.getItem("everyday_max")||0,i))}catch(e){}
     }
     resetUI();await G.go(S.Ending,{sum:summary(),fade:900});window.__done=true;
   }catch(e){console.error(e);window.__err=String(e&&e.stack||e)}

@@ -103,7 +103,7 @@ S.Title={
     for(const f of this.fire){const a=.3+.7*Math.abs(Math.sin(t*1.3+f.p));g.fillStyle=`rgba(255,226,140,${a})`;g.beginPath();g.arc(f.x+Math.sin(t*.5+f.p)*18,f.y+Math.cos(t*.4+f.p)*14,2.2,0,TAU);g.fill()}
     // title
     g.textAlign="left";g.textBaseline="alphabetic";g.shadowColor="rgba(255,150,90,.7)";g.shadowBlur=30;
-    g.fillStyle="#fff5e6";g.font="400 150px Georgia,'Times New Roman',serif";g.fillText("October 7",84,250);g.shadowBlur=0;
+    g.fillStyle="#fff5e6";g.font="400 150px Georgia,'Times New Roman',serif";g.fillText("Everyday",84,250);g.shadowBlur=0;
     g.fillStyle="#ffb26b";g.font="400 30px Georgia,serif";g.fillText("An ordinary day at Technopark.",90,300);
     g.fillStyle="rgba(255,255,255,.6)";g.font="italic 22px Georgia,serif";g.fillText("a story in ten chapters",92,340);
     g.fillStyle="rgba(255,255,255,.35)";g.font="16px system-ui";g.fillText("Click or press Space to advance dialogue  ·  M toggles sound",92,692);
