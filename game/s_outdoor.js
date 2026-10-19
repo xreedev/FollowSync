@@ -138,6 +138,10 @@ S.Atrium={
    LOOP — Nila building ring road (top-down). Three laps.
    ===================================================================== */
 const RING={cx:640,cy:372,hw:470,hh:246,r:120};
+const pickR=a=>a[(Math.random()*a.length)|0];
+const REVL=["Wait! I forgot something!","Other way! Other way!","One sec, my shoe!","Going back. Don't ask.","I think I left the building!"];
+const BACKL=["Respawned!","I'm back. Did you miss me?","Miracle. I'm here again.","That was a shortcut."];
+const CHAT=[["SREEDEV","Is it just me or is this loop longer than it looks?"],["ANAMIKA","It's exactly as long as it looked."],["SREEDEV","Biriyani was a mistake."],["ANAMIKA","You said it was the final answer."],["SREEDEV","I changed my mind about changing my mind."],["ANAMIKA","Keep breathing. Stop talking."],["SREEDEV","Fun fact: Technopark has more trees than people."],["ANAMIKA","Fun fact: you have more excuses than trees."],["SREEDEV","My left leg is filing a complaint."],["ANAMIKA","Complaint rejected."],["SREEDEV","Race you to the next checkpoint?"],["ANAMIKA","No. Walk. Talk. Done."],["SREEDEV","Do you think the pyramid roof is a skylight or a spaceship?"],["ANAMIKA","I think it's a roof."]];
 S.Loop={
   buildRing(){
     const {cx,cy,hw,hh,r}=RING;const pts=[];
@@ -161,7 +165,7 @@ S.Loop={
     return{x:a[0]+(b[0]-a[0])*t,y:a[1]+(b[1]-a[1])*t,f:Math.atan2(b[1]-a[1],b[0]-a[0])}},
   enter(o){
     if(!this.pts)this.buildRing();G.showClock=true;G.chapter(5,"Three Rounds of Nila");
-    this.s=0;this.v=0;this.lap=0;this.next=1;this.done=false;this.res=null;this.laps=3;this.gap=60;this.sg=0;this.hold=0;this.flash=0;this.msg="";this.msgT=0;
+    this.s=0;this.v=0;this.lap=0;this.next=1;this.done=false;this.res=null;this.laps=3;this.gap=60;this.sg=0;this.mode="with";this.revNext=G.rand(10,16);this.revTime=0;this.revD=0;this.revS=0;this.chat=2.5;this.ci=0;this.pop=null;this.hold=0;this.flash=0;this.msg="";this.msgT=0;
     this.dev=S.person("ANAMIKA",{label:true,});this.sree=S.person("SREEDEV",{label:true});
     this.bg=S.cache(1280,720,(g)=>this.paint(g));A.setMusic("ride");
   },
@@ -217,12 +221,18 @@ S.Loop={
     if(this.next%4===0){ if(this.s>=this.len){this.s-=this.len;this.hit()} }
     else if(this.s>=cp.s&&prev<cp.s+1){this.hit()}
     // follower lag grows slightly per lap
-    this.gap=60+this.lap*55;
-    let ls=this.s-this.gap;if(ls<0&&this.lap===0)ls=Math.max(0,ls);else if(ls<0)ls+=this.len;
-    this.sg+=((this.lap>0||this.s>this.gap?ls:0)-this.sg)*Math.min(1,dt*6);
-    const p=this.at(this.s),q=this.at(this.lap===0&&this.s<this.gap?0:this.sg);
+    const p=this.at(this.s);
     Object.assign(this.dev,{x:p.x,y:p.y,face:p.f,pose:this.v>5?"jog":"stand",ph:this.dev.ph+(this.v>5?this.v*dt*.075:0)});
-    Object.assign(this.sree,{x:q.x,y:q.y,face:q.f,pose:this.v>5?"jog":"stand",ph:this.sree.ph+(this.v>5?this.v*dt*.062:0)});
+    // Sreedev jogs beside her, chats, and now and then reverses and respawns
+    if(this.mode==="with"){if(this.v>40)this.revNext-=dt;
+      if(this.revNext<=0&&this.s>350){this.mode="rev";this.revTime=2.2;this.revD=0;this.revS=Math.max(0,this.s-34);G.bubble(this.sree,pickR(REVL),1900);A.sfx("whoosh")}}
+    else{this.revTime-=dt;this.revD+=dt*125;
+      if(this.revTime<=0){const q0=this.at(Math.max(0,this.revS-this.revD));this.pop={x:q0.x,y:q0.y,t:.7};this.mode="with";this.revNext=G.rand(13,22);A.sfx("pop");G.bubble(this.sree,pickR(BACKL),1700)}}
+    const sb=this.mode==="rev"?Math.max(0,this.revS-this.revD):Math.max(0,this.s-34),q=this.at(sb),sf=q.f+(this.mode==="rev"?Math.PI:0);
+    Object.assign(this.sree,{x:q.x-Math.sin(q.f)*15,y:q.y+Math.cos(q.f)*15,face:sf,pose:(this.v>5||this.mode==="rev")?"jog":"stand",ph:this.sree.ph+((this.v>5||this.mode==="rev")?(this.mode==="rev"?125:this.v)*dt*.075:0)});
+    // chit-chat all the way
+    if(this.v>5&&this.mode==="with"){this.chat-=dt;if(this.chat<=0){this.chat=4.3;const l=CHAT[this.ci++%CHAT.length];G.bubble(l[0]==="SREEDEV"?this.sree:this.dev,l[1],3400)}}
+    if(this.pop)this.pop.t-=dt;
     if(this.v>5&&Math.random()<dt*10)A.sfx("step");
     if(this.msgT>0)this.msgT-=dt;if(this.flash>0)this.flash-=dt;
   },
@@ -241,6 +251,7 @@ S.Loop={
     g.fillStyle="#ffd166";g.font="700 14px system-ui";g.textAlign="center";g.fillText(cp.name.toUpperCase(),cp.x,cp.y-52);
     g.beginPath();g.moveTo(cp.x,cp.y-44);g.lineTo(cp.x-8,cp.y-56);g.lineTo(cp.x+8,cp.y-56);g.closePath();
     // runners
+    if(this.pop&&this.pop.t>0){const pr=1-this.pop.t/.7;g.strokeStyle=`rgba(255,255,255,${1-pr})`;g.lineWidth=3;g.beginPath();g.arc(this.pop.x,this.pop.y,8+pr*34,0,TAU);g.stroke();g.beginPath();g.arc(this.pop.x,this.pop.y,4+pr*20,0,TAU);g.stroke()}
     S.drawPerson(g,this.sree,t,1.7);S.drawPerson(g,this.dev,t,1.7);
     this.dev.bx=this.dev.x;this.dev.by=this.dev.y-34;this.sree.bx=this.sree.x;this.sree.by=this.sree.y-34;
     G.drawBubbles(g);

@@ -512,6 +512,16 @@ G.openMenu=function(){
   p.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{p.remove();G.paused=false;A.sfx("click");G.begin(+b.dataset.c)});
 };
 
+S.Title.keysText="";
+S.Office.keysText="W A S D / arrows: walk\nClick the map: auto-walk\nShift: run   E: use   M: sound";
+S.Atrium.keysText="Cutscene: Space / click to continue\n1 2 3: pick an option";
+S.Loop.keysText="Hold SPACE / → / click: run\nFollow the glowing checkpoint\nM: sound";
+S.Parking.keysText="Space / click: continue\nM: sound";
+S.Ride.keysText="Hold ↑ / Space / click: speed up\n↓: slow down   H: horn\nM: sound";
+S.Beach.keysText="Hold → / Space / click: walk\nA / ←: step back   W S: up/down\nM: sound";
+S.Restaurant.keysText="Space / click: continue\n1 2 3: pick an option";
+S.Visitors.keysText="Space / click: continue\n1 2 3: pick an option";
+S.Ending.keysText="";
 G.start();
 const sc=q.get("scene"),T={title:S.Title,office:S.Office,atrium:S.Atrium,loop:S.Loop,parking:S.Parking,beach:S.Beach,visitors:S.Visitors,ending:S.Ending};
 if(q.get("play")||DEV&&q.get("auto")||q.get("ch")){G.go(S.Title,{fade:0}).then(()=>G.begin(+(q.get("ch")||1)))}

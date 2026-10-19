@@ -43,6 +43,8 @@
   #hbtns{display:flex;gap:calc(var(--u)*8);pointer-events:auto}
   .hb{font:inherit;font-size:calc(var(--u)*16);color:var(--ink);background:rgba(10,12,18,.65);border:1px solid rgba(255,255,255,.18);border-radius:calc(var(--u)*10);padding:calc(var(--u)*6) calc(var(--u)*12);cursor:pointer}
   .hb:hover{border-color:var(--accent)}
+  #khint{margin-top:calc(var(--u)*8);font-size:calc(var(--u)*14);line-height:1.6;color:#d6dae3;background:rgba(10,12,18,.62);border:1px solid rgba(255,255,255,.14);border-radius:calc(var(--u)*8);padding:calc(var(--u)*5) calc(var(--u)*10);display:none;white-space:pre-line;max-width:calc(var(--u)*420)}
+  #khint.on{display:block}
   #hint{position:absolute;left:50%;top:calc(var(--u)*76);transform:translateX(-50%);font-size:calc(var(--u)*20);color:var(--ink);background:rgba(10,12,18,.72);border:1px solid rgba(255,255,255,.16);padding:calc(var(--u)*8) calc(var(--u)*18);border-radius:calc(var(--u)*30);display:none;pointer-events:none;white-space:nowrap}
   #hint.on{display:block}
   /* chapter card */
@@ -87,7 +89,7 @@
 <div id="stage">
   <canvas id="cv"></canvas>
   <div id="mini"></div>
-  <div id="hud"><div><div id="clock"></div><div id="chap"></div></div><div id="hbtns"><button class="hb" id="bMute">♪ On</button><button class="hb" id="bMenu">Menu</button><a class="hb" href="index.html" style="text-decoration:none">Office map</a></div></div>
+  <div id="hud"><div><div id="clock"></div><div id="chap"></div><div id="khint"></div></div><div id="hbtns"><button class="hb" id="bMute">♪ On</button><button class="hb" id="bMenu">Menu</button><a class="hb" href="index.html" style="text-decoration:none">Office map</a></div></div>
   <div id="hint"></div><div id="toast"></div>
   <div id="choices"><div id="cprompt"></div><div id="clist" style="display:flex;flex-direction:column;gap:inherit"></div></div>
   <div id="dlg"><div id="portw"><canvas id="port" width="208" height="208"></canvas></div><div id="who"></div><div id="txt"></div><div id="more">▶</div></div>

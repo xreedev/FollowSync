@@ -34,7 +34,7 @@ G.go=async function(scene,o={}){
   const ms=o.fade===0?0:(o.fade||450);
   if(G.scene&&ms){await G.fadeOut(ms)}
   if(G.scene&&G.scene.exit)G.scene.exit();
-  G.bubbles.length=0;G.scene=scene;if(scene.enter)scene.enter(o);
+  G.bubbles.length=0;G.scene=scene;if(scene.enter)scene.enter(o);G.setKeys(scene.keysText||"");
   if(ms)await G.fadeIn(ms);
 };
 G.fadeOut=ms=>new Promise(r=>{G.fadeTo=1;if(G.fade>=1){r();return}G.fadeMs=G.dev?30:ms;G._fr=r});
@@ -54,7 +54,7 @@ G.drawBubbles=function(g){
     const words=b.text.split(" "),lines=[];let cur="";
     for(const w of words){const t=cur?cur+" "+w:w;if(g.measureText(t).width>300&&cur){lines.push(cur);cur=w}else cur=t}lines.push(cur);
     const tw=Math.max(...lines.map(l=>g.measureText(l).width)),bw=tw+34,bh=lines.length*28+22;
-    let bx=G.clamp(x-bw/2,14,1280-bw-14),by=y-bh-22;if(by<10)by=10;
+    let bx=G.clamp(x-bw/2,14,1280-bw-14),by=y-bh-22;if(by<112)by=112;if(bx<250&&by<250)bx=250;
     const fade=Math.min(1,(b.until-now)/250);g.globalAlpha=fade;
     g.fillStyle="rgba(0,0,0,.25)";g.beginPath();g.roundRect(bx+3,by+5,bw,bh,18);g.fill();
     g.fillStyle=b.style=="think"?"#eef3ff":"#fff";g.beginPath();g.roundRect(bx,by,bw,bh,18);g.fill();
@@ -121,6 +121,7 @@ G.card=function(k,h,t){
     c.onclick=fin;setTimeout(fin,3600);A.sfx("card");
   });
 };
+G.setKeys=t=>{const k=$("khint");if(!k)return;k.textContent=t||"";k.classList.toggle("on",!!t)};
 G.chapter=(n,title)=>{$("chap").textContent=n?("Chapter "+n+" · "+title):title};
 
 /* ---------- input ---------- */
