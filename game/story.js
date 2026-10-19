@@ -218,15 +218,18 @@ async function ch1(R){
   await R.say("ANAMIKA","Obviously.");
 }
 async function ch2(R){
-  G.setTime(10,58);
+  G.setTime(11,5);
   if(G.scene!==S.Office){await R.go(S.Office,{spawn:SEAT(),ch:2,title:"The Watch"})}
   O().pr.deskCup=true;
-  await R.card("Chapter 2","The Watch","11:00 AM");G.chapter(2,"The Watch");
-  await R.p(G.runTime(660,900));
+  await R.card("Chapter 2","The Watch","11:11 AM");G.chapter(2,"The Watch");
+  await R.p(G.runTime(671,900));
   G.bubble(O().sree,"*types*",2600);
-  await R.nar("11:00 AM. Your watch buzzes.");
+  await R.nar("11:11 AM. Her watch buzzes.");
   A.sfx("buzz");G.shake=.6;
   await R.p(watchGame());
+  G.bubble(O().dev,"Sreedev therane",2200);
+  await R.say("ANAMIKA","Sreedev therane.");
+  await R.say("SREEDEV","Anamika therane.");
   G.bubble(O().sree,"Haha!",1400);
   await R.say("SREEDEV","Haha. I see you. Back to work, both of us.");
   await R.nar("The morning slips by…");
