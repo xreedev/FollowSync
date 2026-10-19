@@ -416,7 +416,7 @@ S.Office={
     const P=this.pr,g=ctx;
     // cup shelf, kettle, tea caddy in the pantry
     g.fillStyle="#7b5c44";g.fillRect(116,209,72,9);g.fillStyle="rgba(0,0,0,.3)";g.fillRect(116,218,72,2);
-    for(const [x,c,r] of [[128,"#f3efe8",3.4],[146,"#e8a0b8",3.8],[172,"#3c6fd4",6]]){if(P.cup==="big"&&r===6)continue;g.fillStyle="rgba(0,0,0,.25)";g.beginPath();g.arc(x+1,214,r,0,7);g.fill();g.fillStyle=c;g.beginPath();g.arc(x,213,r,0,7);g.fill();g.fillStyle="rgba(255,255,255,.4)";g.beginPath();g.arc(x-1,212,r*.4,0,7);g.fill()}
+    for(const [x,c,r] of [[128,"#f3efe8",3.4],[146,"#e8a0b8",3.8],[172,"#cfeaf3",6]]){if(P.cup==="big"&&r===6)continue;g.fillStyle="rgba(0,0,0,.25)";g.beginPath();g.arc(x+1,214,r,0,7);g.fill();g.fillStyle=c;g.beginPath();g.arc(x,213,r,0,7);g.fill();g.fillStyle="rgba(255,255,255,.4)";g.beginPath();g.arc(x-1,212,r*.4,0,7);g.fill()}
     // kettle on counter 2
     g.fillStyle="rgba(0,0,0,.28)";g.beginPath();g.ellipse(139,296,10,9,0,0,7);g.fill();g.fillStyle="#dfe4ec";g.beginPath();g.arc(136,293,9,0,7);g.fill();g.strokeStyle="#8d96a5";g.lineWidth=1;g.stroke();g.fillStyle="#2b2f37";g.beginPath();g.arc(136,293,3,0,7);g.fill();g.fillStyle="#444b57";g.fillRect(143,291,8,3);g.strokeStyle="#2b2f37";g.lineWidth=2;g.beginPath();g.arc(128,293,6,1.6,4.7);g.stroke();
     g.fillStyle=P.boiling?"#4aa8ff":"#555";g.beginPath();g.arc(136,300,1.5,0,7);g.fill();
@@ -424,7 +424,7 @@ S.Office={
     // caddy + milk + sugar on counter 3
     g.fillStyle="#3d7a58";g.beginPath();g.arc(131,401,6,0,7);g.fill();g.fillStyle="#d8b24a";g.fillRect(125,399,12,3);g.fillStyle="#b8332b";g.fillRect(140,396,8,10);g.fillStyle="#f5f7fa";g.fillRect(127,413,7,9);g.fillStyle="#3a74c9";g.fillRect(127,416,7,3);g.fillStyle="#dde8ee";g.fillRect(138,414,8,8);g.fillStyle="#fff";g.fillRect(140,416,4,4);
     // placed cup (counter 4)
-    if(P.cup){g.fillStyle="rgba(0,0,0,.25)";g.beginPath();g.arc(138,445,6.5,0,7);g.fill();g.fillStyle="#3c6fd4";g.beginPath();g.arc(136,443,6,0,7);g.fill();g.fillStyle=P.water?(P.tea?"#5a2d12":"#dfeef5"):"#222";g.beginPath();g.arc(136,443,4.2,0,7);g.fill();
+    if(P.cup){g.fillStyle="rgba(0,0,0,.25)";g.beginPath();g.arc(138,445,6.5,0,7);g.fill();g.fillStyle="rgba(205,235,245,.9)";g.beginPath();g.arc(136,443,6,0,7);g.fill();g.strokeStyle="rgba(255,255,255,.9)";g.lineWidth=1;g.stroke();g.fillStyle=P.water?(P.tea?"#5a2d12":"#dfeef5"):"#222";g.beginPath();g.arc(136,443,4.2,0,7);g.fill();
       if(P.tea){for(let i=0;i<3;i++){g.strokeStyle=`rgba(255,255,255,${.4-i*.1})`;g.lineWidth=1.2;const o=(t*18+i*8)%16;g.beginPath();g.arc(134+i*2,440-o*.5,2+o*.1,0,7);g.stroke()}}}
     // lift by reception
     g.fillStyle="#c9ced6";g.fillRect(1022,590,60,18);g.fillStyle="#8c93a0";g.fillRect(1051,590,2,18);g.strokeStyle="#6a7280";g.lineWidth=1.5;g.strokeRect(1022,590,60,18);

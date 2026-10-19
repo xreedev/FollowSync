@@ -33,7 +33,7 @@ async function liftCut(R){G.hideDlg();await G.fadeOut(500);A.sfx("lift");await R
    ===================================================================== */
 function cupPanel(){
   return new Promise(res=>{
-    const cups=[{id:"s",n:"Small cup",d:"a sip, really",c:"#f3efe8",w:22},{id:"m",n:"Medium mug",d:"respectable",c:"#e8a0b8",w:30},{id:"b",n:"The big blue cup",d:"“DAD” painted on it",c:"#3c6fd4",w:44}];
+    const cups=[{id:"s",n:"Small cup",d:"a sip, really",c:"#f3efe8",w:22},{id:"m",n:"Medium mug",d:"respectable",c:"#e8a0b8",w:30},{id:"b",n:"The big glass cup",d:"clear, you can see the tea",c:"#cfeaf3",w:44}];
     const p=panel(`<h3>Pantry · cup shelf</h3><p style="color:#9aa3b5">Which cup for Sreedev?</p><div class="grid" style="grid-template-columns:repeat(3,1fr)">${cups.map(c=>`<button class="btn" data-c="${c.id}" style="text-align:center;padding:calc(var(--u)*16)"><div style="margin:0 auto calc(var(--u)*8);width:calc(var(--u)*${c.w}*1.3);height:calc(var(--u)*${c.w}*1.3);border-radius:50%;background:${c.c};border:calc(var(--u)*3) solid rgba(255,255,255,.4)"></div><div>${c.n}</div><div style="font-size:calc(var(--u)*14);color:#9aa3b5">${c.d}</div></button>`).join("")}</div>`,CENTER+";width:calc(var(--u)*640)","cp");
     p.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{A.sfx("clink");p.remove();res(b.dataset.c)});
     if(DEV)setTimeout(()=>p.querySelector(`[data-c="${DEV_CUP.shift()||"b"}"]`).click(),10);
