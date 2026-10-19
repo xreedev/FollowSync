@@ -44,7 +44,7 @@
 <script>
 const $=id=>document.getElementById(id);let dp=null;
 const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone;
-if(standalone){location.replace("index.html")}
+if(standalone){location.replace("game.html")}
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
 if(ios){$("inst").style.display="none";$("ios").classList.add("on")}

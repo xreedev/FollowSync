@@ -1,9 +1,9 @@
 {
   "name": "Everyday",
   "short_name": "Everyday",
-  "description": "An ordinary day at Technopark: explore the office and atrium, then play the story.",
-  "id": "/index.html",
-  "start_url": "./index.html",
+  "description": "A little story game about an ordinary day at Technopark.",
+  "id": "/game.html",
+  "start_url": "./game.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
@@ -45,26 +45,6 @@
     {
       "name": "Play Everyday",
       "url": "./game.html",
-      "icons": [
-        {
-          "src": "icons/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Office map",
-      "url": "./index.html",
-      "icons": [
-        {
-          "src": "icons/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Atrium map",
-      "url": "./atrium.html",
       "icons": [
         {
           "src": "icons/icon-192.png",
