@@ -69,7 +69,7 @@ S.Title={
     $("mBegin").onclick=()=>{A.init();A.sfx("start");if(G.begin)G.begin(1)};
     $("mSnd").onclick=()=>{A.init();A.toggle();$("mSnd").textContent="Sound: "+(A.muted?"off":"on")};
     $("mCh").onclick=()=>{A.init();$("chsel").classList.toggle("on")};
-    const names=["Black Tea","The Watch","Lunch?","Suda Suda","Three Rounds of Nila","Role Reversal","Six Thirty","Seven Thirty","The Ride","Visitors' Area"];
+    const names=["Black Tea","The Watch","Lunch?","Suda Suda","Three Rounds of Nila","Tea Time","Six Thirty","Seven Thirty","The Ride","Visitors' Area"];
     $("chlist").innerHTML=names.map((n,i)=>`<button class="btn" data-c="${i+1}">${i+1}. ${n}</button>`).join("");
     $("chlist").querySelectorAll("button").forEach(b=>b.onclick=()=>{A.init();A.sfx("click");if(G.begin)G.begin(+b.dataset.c)});
     this.bg=S.cache(1280,720,(g)=>{

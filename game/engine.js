@@ -65,7 +65,7 @@ G.drawBubbles=function(g){
 };
 
 /* ---------- dialogue ---------- */
-const COL={DEVIKA:"#ff9db8",SREEDEV:"#ffd166",NAVYA:"#b9a2ff","HER BROTHER":"#7be0b0",BROTHER:"#7be0b0",NARRATOR:"#aab3c2",VENDOR:"#ffb27a"};
+const COL={ANAMIKA:"#ff9db8",SREEDEV:"#ffd166",NAVYA:"#b9a2ff","SIDHU":"#7be0b0",SIDHU:"#7be0b0",NARRATOR:"#aab3c2",VENDOR:"#ffb27a"};
 G.COL=COL;
 let curSay=null;
 G.say=function(who,text,o={}){

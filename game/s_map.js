@@ -340,13 +340,15 @@ function drawBubbles(){
 
 
 /* =====================================================================
-   THE STORY SCENE: the office, walked by Devika (small top-down sprites, like the explorer)
+   THE STORY SCENE: the office, walked by Anamika (small top-down sprites, like the explorer)
    ===================================================================== */
 // carve a side gap in Bay 3's west wall so Sreedev can step out of his seat; drop his NPC collision box
 (function(){
   const bay3=ROOMS.find(r=>r.id==="bay3"),x=bay3.r[0];
-  for(let i=BLOCK.length-1;i>=0;i--){const b=BLOCK[i];if(b[4]==="w"&&Math.abs(b[0]-(x-WT/2))<.1&&b[3]-b[1]>100){BLOCK.splice(i,1);BLOCK.push([b[0],b[1],b[2],488,"w"],[b[0],522,b[2],b[3],"w"]);break}}
+  for(let i=BLOCK.length-1;i>=0;i--){const b=BLOCK[i];if(b[4]==="w"&&Math.abs(b[0]-(x-WT/2))<.1&&b[3]-b[1]>100){BLOCK.splice(i,1);BLOCK.push([b[0],b[1],b[2],488,"w"],[b[0],560,b[2],b[3],"w"]);break}}
   const king=NPCS.find(n=>n.king);king.hidden=true;
+  const anam=NPCS.find(n=>n.name==="Anamika");anam.hidden=true;anam.loop="";S.SEAT=[anam.x,anam.y];
+  for(let i=BLOCK.length-1;i>=0;i--){const b=BLOCK[i];if(b[4]==="n"&&Math.abs(b[0]-(anam.x-4))<.1&&Math.abs(b[1]-(anam.y-4))<.1){BLOCK.splice(i,1);break}}
   for(let i=BLOCK.length-1;i>=0;i--){const b=BLOCK[i];if(b[4]==="n"&&Math.abs(b[0]-(king.x-4))<.1&&Math.abs(b[1]-(king.y-4))<.1){BLOCK.splice(i,1);break}}
   for(let j=0;j<GY;j++)for(let i=0;i<GX;i++)grid[j*GX+i]=free(WORLD[0]+i*CELL+CELL/2,WORLD[1]+j*CELL+CELL/2)?1:0;
 })();
@@ -358,7 +360,7 @@ S.Office={
     for(const k in TEX)PAT[k]=ctx.createPattern(TEX[k],"repeat");
     const sp=o.spawn||[700,330];this.z=o.z||2.1;this.cam={x:sp[0],y:sp[1]};
     const king=NPCS.find(n=>n.king);
-    this.dev=S.person("DEVIKA",{x:sp[0],y:sp[1],face:Math.PI/2});
+    this.dev=S.person("ANAMIKA",{x:sp[0],y:sp[1],face:Math.PI/2});
     this.sree=S.person("SREEDEV",{x:king.x,y:king.y,face:0,seat:true,label:true});
     this.navya=S.person("NAVYA",{x:1210,y:520,vis:false,face:Math.PI,label:true});
     this.control=!!o.control;this.path=null;this.goal=null;this.lit=0;this.pr={};this.minY=WORLD[1];this.eWas=false;this.res=null;this.autoRes=null;this.t0=G.t;

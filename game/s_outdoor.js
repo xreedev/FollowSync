@@ -53,10 +53,10 @@ S.Atrium={
   enter(o){
     o=o||{};G.showClock=true;this.z=2.0;this.cam={x:200,y:550};this.t0=G.t;this.night=!!o.night;
     const mk=(n,x,y)=>S.person(n,{x,y,face:0,pose:"stand",ph:0,label:n!=="NAVYA"});
-    this.dev=mk("DEVIKA",180,556);this.sree=mk("SREEDEV",150,548);this.navya=mk("NAVYA",1,1);this.navya.vis=false;
+    this.dev=mk("ANAMIKA",180,556);this.sree=mk("SREEDEV",150,548);this.navya=mk("NAVYA",1,1);this.navya.vis=false;
     this.follow=this.dev;this.crowd=[];
     for(let i=0;i<9;i++){const sp=[[550,200],[550,420],[250,550],[900,550],[330,480],[770,480],[240,780],[860,780],[550,900]][i];
-      const c=S.person(["NAVYA","BROTHER","VENDOR"][i%3],{x:sp[0],y:sp[1],face:Math.random()*TAU,pose:"stand"});c.shirt=["#3b6ea5","#8a4f7d","#4f8a6b","#b5654a","#555b6e","#c79a3a"][i%6];c.wander=Math.random()*5;c.tx=sp[0];c.ty=sp[1];this.crowd.push(c)}
+      const c=S.person(["NAVYA","SIDHU","VENDOR"][i%3],{x:sp[0],y:sp[1],face:Math.random()*TAU,pose:"stand"});c.shirt=["#3b6ea5","#8a4f7d","#4f8a6b","#b5654a","#555b6e","#c79a3a"][i%6];c.wander=Math.random()*5;c.tx=sp[0];c.ty=sp[1];this.crowd.push(c)}
     this.pat=null;G.chapter(o.ch||4,o.title||"Suda Suda");A.setMusic(this.night?"night":"warm");
   },
   walkRoute(actor,pts,o={}){
@@ -162,7 +162,7 @@ S.Loop={
   enter(o){
     if(!this.pts)this.buildRing();G.showClock=true;G.chapter(5,"Three Rounds of Nila");
     this.s=0;this.v=0;this.lap=0;this.next=1;this.done=false;this.res=null;this.laps=3;this.gap=60;this.sg=0;this.hold=0;this.flash=0;this.msg="";this.msgT=0;
-    this.dev=S.person("DEVIKA",{});this.sree=S.person("SREEDEV",{label:true});
+    this.dev=S.person("ANAMIKA",{});this.sree=S.person("SREEDEV",{label:true});
     this.bg=S.cache(1280,720,(g)=>this.paint(g));A.setMusic("ride");
   },
   paint(g){

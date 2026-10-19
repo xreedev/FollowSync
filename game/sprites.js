@@ -2,15 +2,15 @@
 (function(){
 "use strict";
 const TAU=Math.PI*2;
-/* look of each character — Devika is the orange player from the explorer; Sreedev is the crowned worker */
+/* look of each character — Anamika is the orange player from the explorer; Sreedev is the crowned worker */
 const LOOK={
-  DEVIKA:{shirt:"#e8832a",edge:"#9a4f10",skin:"#f1c9a5",hair:"#1d1a1c",card:true,color:"#ff9d4a"},
+  ANAMIKA:{shirt:"#e8832a",edge:"#9a4f10",skin:"#f1c9a5",hair:"#1d1a1c",card:true,color:"#ff9d4a"},
   SREEDEV:{shirt:"#7a1f3d",edge:"rgba(0,0,0,.4)",skin:"#d9a577",hair:"#1c1614",crown:true,color:"#ffd166"},
   NAVYA:{shirt:"#7f6bd0",edge:"rgba(0,0,0,.4)",skin:"#f1c9a5",hair:"#2a1a16",color:"#b9a2ff"},
-  BROTHER:{shirt:"#3b8d6e",edge:"rgba(0,0,0,.4)",skin:"#d9a577",hair:"#17120f",color:"#7be0b0"},
+  SIDHU:{shirt:"#3b8d6e",edge:"rgba(0,0,0,.4)",skin:"#d9a577",hair:"#17120f",color:"#7be0b0"},
   VENDOR:{shirt:"#e6e0cf",edge:"rgba(0,0,0,.4)",skin:"#b97d52",hair:"#222",color:"#ffb27a"}
 };
-LOOK["HER BROTHER"]=LOOK.BROTHER;
+LOOK["SIDHU"]=LOOK.SIDHU;
 S.LOOK=LOOK;
 
 /* a story actor: {name,x,y,face,pose,ph,...}. Drawn at world scale k (1 = the explorer's size) */

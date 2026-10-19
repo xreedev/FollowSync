@@ -42,7 +42,7 @@ const tree=(g,x,y,r,night)=>{g.fillStyle="rgba(0,0,0,.28)";g.beginPath();g.arc(x
    ===================================================================== */
 S.Parking={
   enter(){
-    G.showClock=true;this.dev=S.person("DEVIKA",{x:300,y:420,face:0,k:1});this.sree=S.person("SREEDEV",{x:240,y:360,face:0,label:true});this.lit=false;this.rev=0;
+    G.showClock=true;this.dev=S.person("ANAMIKA",{x:300,y:420,face:0,k:1});this.sree=S.person("SREEDEV",{x:240,y:360,face:0,label:true});this.lit=false;this.rev=0;
     G.chapter(8,"Seven Thirty");A.setMusic("night");
   },
   async helmets(){await G.wait(700);this.sree.helmet="#1a1d24";A.sfx("click");await G.wait(800);this.dev.helmet="#f08ab4";A.sfx("click");await G.wait(700);this.lit=true;A.sfx("start");await G.wait(900)},
@@ -70,12 +70,12 @@ S.Parking={
 /* =====================================================================
    BEACH — St. Andrews, top-down at night
    ===================================================================== */
-const BW=4800,SHORE=300;
+const BW=2400,SHORE=300;
 S.Beach={
-  stations:[320,1250,2250,3200,4050],
+  stations:[560,1500],
   enter(){
-    G.showClock=true;this.z=1.55;this.cam={x:300,y:380};this.dev=S.person("DEVIKA",{x:160,y:430,face:0});this.sree=S.person("SREEDEV",{x:90,y:446,face:0,label:true});
-    this.foot=[];this.target=-1;this.res=null;this.surf=0;this.surfTarget=0;this.dog={x:2330,y:470,pet:0,wag:0};this.shell={x:3260,y:455,taken:false};this.canPet=false;this.canShell=false;this.petCb=null;this.shellCb=null;this.sitting=false;this.shoot=0;this.hintT=0;this.walkingNow=false;
+    G.showClock=true;this.z=1.55;this.cam={x:300,y:380};this.dev=S.person("ANAMIKA",{x:160,y:430,face:0});this.sree=S.person("SREEDEV",{x:90,y:446,face:0,label:true});
+    this.foot=[];this.target=-1;this.res=null;this.surf=0;this.surfTarget=0;this.dog={x:1000,y:470,pet:0,wag:0,dir:-1,tx:null};this.shell={x:3260,y:455,taken:true};this.fog=0;this.fogOn=false;this.dogCb=null;this.canPet=false;this.canShell=false;this.petCb=null;this.shellCb=null;this.sitting=false;this.shoot=0;this.hintT=0;this.walkingNow=false;
     this.fire=Array.from({length:40},(_,i)=>({x:hash(i)*BW,y:hash(i+9)*640,p:hash(i+3)*6}));G.chapter(9,"Saint Andrews Beach");A.setMusic("night");A.waves(true);
   },
   exit(){A.waves(false)},
@@ -94,7 +94,9 @@ S.Beach={
     if(!this.sree.task&&!this.sitting){const S2=this.sree,gx=P.x-34,gy=P.y+14,d=Math.hypot(gx-S2.x,gy-S2.y);if(d>6){const st=Math.min(d,100*dt);S2.x+=(gx-S2.x)/d*st;S2.y+=(gy-S2.y)/d*st;S2.face=Math.atan2(gy-S2.y,gx-S2.x);S2.pose="walk";S2.ph+=st*.14}else{S2.pose="stand";S2.face=P.face}}
     if(this.walkingNow){const l=this.foot[this.foot.length-1];if(!l||Math.hypot(l.x-P.x,l.y-P.y)>14)this.foot.push({x:P.x,y:P.y+3,f:this.foot.length%2})}if(this.foot.length>70)this.foot.shift();
     this.cam.x+=(G.clamp(P.x,640/this.z,BW-640/this.z)-this.cam.x)*Math.min(1,dt*4);this.cam.y+=(300+(P.y-300)*.35-this.cam.y)*Math.min(1,dt*4);
-    this.dog.wag+=dt*10;if(this.dog.pet>0)this.dog.pet-=dt;if(this.shoot>0)this.shoot-=dt*.6;
+    this.dog.wag+=dt*10;if(this.dog.pet>0)this.dog.pet-=dt;
+    if(this.dog.tx!=null){const dd=this.dog.tx-this.dog.x;if(Math.abs(dd)>2){this.dog.dir=dd>0?1:-1;this.dog.x+=Math.sign(dd)*Math.min(Math.abs(dd),75*dt)}else{this.dog.tx=null;if(this.dogCb){const c=this.dogCb;this.dogCb=null;c()}}}
+    if(this.fogOn)this.fog=Math.min(1,this.fog+dt*.35);if(this.shoot>0)this.shoot-=dt*.6;
     this.canPet=Math.abs(P.x-this.dog.x)<240;this.canShell=!this.shell.taken&&Math.abs(P.x-this.shell.x)<240;
   },
   w2s(x,y){return[640+(x-this.cam.x)*this.z,360+(y-this.cam.y)*this.z]},
@@ -123,18 +125,18 @@ S.Beach={
     g.fillStyle="rgba(20,28,56,.5)";g.fillRect(x0,w0-4,x1-x0,26);
     g.fillStyle="rgba(240,248,255,.6)";g.beginPath();for(let x=x0;x<=x1;x+=10){const y=w0+Math.sin(x*.03+t*1.4)*3.5;x===x0?g.moveTo(x,y):g.lineTo(x,y)}for(let x=x1;x>=x0;x-=10)g.lineTo(x,w0+7+Math.sin(x*.05+t*2)*2.4);g.closePath();g.fill();
     // boats pulled up on the sand, shacks (top-down roofs)
-    for(const bx of [820,2000,2860,3620]){g.fillStyle="rgba(0,0,0,.3)";g.beginPath();g.ellipse(bx+6,520,52,14,0,0,TAU);g.fill();g.fillStyle="#2d2a36";g.beginPath();g.ellipse(bx,514,50,13,0,0,TAU);g.fill();g.fillStyle="#d9503a";g.beginPath();g.ellipse(bx,514,44,8,0,0,TAU);g.fill();g.fillStyle="rgba(255,220,140,.95)";g.beginPath();g.arc(bx+12,514,3,0,TAU);g.fill();g.fillStyle="rgba(255,200,110,.18)";g.beginPath();g.arc(bx+12,514,40,0,TAU);g.fill()}
-    for(const sx of [1050,3480]){g.fillStyle="rgba(0,0,0,.3)";g.fillRect(sx-64,596,128,84);g.fillStyle="#3a2a2c";g.fillRect(sx-70,590,140,84);g.fillStyle="#4a3436";g.fillRect(sx-70,590,140,10);
+    for(const bx of [820,1300,2000]){g.fillStyle="rgba(0,0,0,.3)";g.beginPath();g.ellipse(bx+6,520,52,14,0,0,TAU);g.fill();g.fillStyle="#2d2a36";g.beginPath();g.ellipse(bx,514,50,13,0,0,TAU);g.fill();g.fillStyle="#d9503a";g.beginPath();g.ellipse(bx,514,44,8,0,0,TAU);g.fill();g.fillStyle="rgba(255,220,140,.95)";g.beginPath();g.arc(bx+12,514,3,0,TAU);g.fill();g.fillStyle="rgba(255,200,110,.18)";g.beginPath();g.arc(bx+12,514,40,0,TAU);g.fill()}
+    for(const sx of [1050,1900]){g.fillStyle="rgba(0,0,0,.3)";g.fillRect(sx-64,596,128,84);g.fillStyle="#3a2a2c";g.fillRect(sx-70,590,140,84);g.fillStyle="#4a3436";g.fillRect(sx-70,590,140,10);
       for(let i=0;i<12;i++){const lx=sx-66+i*12;g.fillStyle=["#ff5a5a","#ffd24a","#7be08a","#4ac2ff"][i%4];g.beginPath();g.arc(lx,604+Math.sin(i)*3,2.8,0,TAU);g.fill();g.fillStyle="rgba(255,230,160,.14)";g.beginPath();g.arc(lx,604,14,0,TAU);g.fill()}
       g.fillStyle="#ffd166";g.font="700 8px system-ui";g.textAlign="center";g.fillText("CORN · COCONUT",sx,640);g.textAlign="left"}
     // church on the headland (east end)
-    const cx=4560;if(cx>x0-300&&cx<x1+300){g.fillStyle="#2a2a38";g.beginPath();g.ellipse(cx,420,230,170,0,0,TAU);g.fill();
+    const cx=2150;if(cx>x0-300&&cx<x1+300){g.fillStyle="#2a2a38";g.beginPath();g.ellipse(cx,420,230,170,0,0,TAU);g.fill();
       g.fillStyle="rgba(0,0,0,.35)";g.fillRect(cx-60,372,150,110);g.fillStyle="#d9d4c8";g.fillRect(cx-70,360,150,108);g.fillStyle="#b9604a";g.fillRect(cx-64,366,138,96);for(let i=0;i<10;i++){g.fillStyle="rgba(0,0,0,.14)";g.fillRect(cx-64,366+i*10,138,2)}
       g.fillStyle="#b9604a";g.fillRect(cx-16,330,48,40);g.fillStyle="#e8e2d4";g.fillRect(cx-6,300,28,36);g.fillStyle="#c9a24a";g.fillRect(cx+6,284,3,20);g.fillRect(cx+1,291,13,3);
       g.fillStyle="rgba(255,214,130,.85)";for(const wx of [-52,-30,40,62])g.fillRect(cx+wx,356,8,6);g.fillStyle=rg(g,cx+8,400,10,230,[[0,"rgba(255,214,130,.28)"],[1,"rgba(255,214,130,0)"]]);g.fillRect(cx-230,200,470,400);
       g.fillStyle="#fff";g.font="700 9px system-ui";g.textAlign="center";g.fillText("ST. ANDREWS CHURCH",cx+8,500);g.textAlign="left"}
     // bench (last station) + station beacons
-    const bx=this.stations[4]+60;g.fillStyle="rgba(0,0,0,.3)";g.fillRect(bx-34,452,72,14);g.fillStyle="#3a2c22";g.fillRect(bx-36,448,72,12);g.fillStyle="#2a1e16";g.fillRect(bx-36,446,72,3);
+    const bx=this.stations[1]+60;g.fillStyle="rgba(0,0,0,.3)";g.fillRect(bx-34,452,72,14);g.fillStyle="#3a2c22";g.fillRect(bx-36,448,72,12);g.fillStyle="#2a1e16";g.fillRect(bx-36,446,72,3);
     // shell
     if(!this.shell.taken){const sx=this.shell.x,sy=this.shell.y;g.fillStyle="#f6d5c3";g.beginPath();g.ellipse(sx,sy,6,4,0,0,TAU);g.fill();g.strokeStyle="#c79a86";g.lineWidth=.8;for(let i=-2;i<=2;i++){g.beginPath();g.moveTo(sx+i*2,sy-3);g.lineTo(sx+i*2.6,sy+3.4);g.stroke()}
       const gl=.4+.6*Math.abs(Math.sin(t*3));g.fillStyle=`rgba(255,255,255,${gl})`;g.fillRect(sx-9,sy-9,1.4,7);g.fillRect(sx-12,sy-6,7,1.4);
@@ -159,10 +161,12 @@ S.Beach={
     if(this.shoot>0){const p=1-this.shoot;g.strokeStyle=`rgba(255,255,255,${1-p})`;g.lineWidth=3;g.beginPath();g.moveTo(300+p*700,60+p*140);g.lineTo(300+p*700-120,60+p*140-34);g.stroke()}
     Art.drawFx(g);G.drawBubbles(g);
     if(this.target>=0&&this.hintT>0){g.fillStyle="rgba(10,12,18,.72)";g.beginPath();g.roundRect(380,652,520,44,22);g.fill();g.fillStyle="#fff";g.font="500 19px system-ui";g.textAlign="center";g.fillText("Hold → / Space / click (or WASD) to walk along the shore",640,680);g.textAlign="left"}
+    if(this.fog>0){const f=this.fog;g.fillStyle=`rgba(210,220,238,${.3*f})`;g.fillRect(0,0,1280,720);
+      for(let i=0;i<10;i++){const x=((t*26*(1+i%3*.4)+i*230)%1800)-260;g.fillStyle=`rgba(232,238,250,${.2*f})`;g.beginPath();g.ellipse(x,80+i*66,380,74,0,0,TAU);g.fill()}}
     g.fillStyle="rgba(16,26,70,.2)";g.fillRect(0,0,1280,720);S.vignette(g,.55);
   },
   dogDraw(g,t){
-    const d=this.dog,w=Math.sin(d.wag)*(d.pet>0?.8:.3);g.save();g.translate(d.x,d.y);g.fillStyle="rgba(0,0,0,.3)";g.beginPath();g.ellipse(2,3,13,7,0,0,TAU);g.fill();
+    const d=this.dog,w=Math.sin(d.wag)*(d.pet>0?.8:.3);g.save();g.translate(d.x,d.y);g.scale(d.dir||1,1);g.fillStyle="rgba(0,0,0,.3)";g.beginPath();g.ellipse(2,3,13,7,0,0,TAU);g.fill();
     g.fillStyle="#9b6a3e";g.beginPath();g.ellipse(0,0,12,6,0,0,TAU);g.fill();g.beginPath();g.arc(13,0,5,0,TAU);g.fill();g.fillStyle="#6c4426";g.beginPath();g.ellipse(11,-4,2.4,3.4,.3,0,TAU);g.fill();g.beginPath();g.ellipse(11,4,2.4,3.4,-.3,0,TAU);g.fill();
     g.fillStyle="#c9a278";g.beginPath();g.ellipse(17,0,2.6,2.2,0,0,TAU);g.fill();g.fillStyle="#111";g.beginPath();g.arc(18.5,0,.9,0,TAU);g.fill();
     g.strokeStyle="#9b6a3e";g.lineWidth=2.4;g.lineCap="round";g.beginPath();g.moveTo(-11,0);g.quadraticCurveTo(-18,w*10,-21,w*14);g.stroke();g.restore();
@@ -175,9 +179,9 @@ S.Beach={
 S.Restaurant={
   enter(o){
     o=o||{};this.kind=o.kind||"istanbul";G.showClock=true;
-    this.dev=S.person("DEVIKA",{x:520,y:380,face:0,seat:true});this.sree=S.person("SREEDEV",{x:780,y:380,face:Math.PI,seat:true,label:true});
+    this.dev=S.person("ANAMIKA",{x:520,y:380,face:0,seat:true});this.sree=S.person("SREEDEV",{x:780,y:380,face:Math.PI,seat:true,label:true});
     G.chapter(9,this.kind==="istanbul"?"Istanbul Rolls & Grills":"Waffles");A.setMusic("warm");
-    this.others=Array.from({length:6},(_,i)=>{const n=S.person(["NAVYA","BROTHER","VENDOR"][i%3],{x:[180,300,1060,1160,200,1100][i],y:[200,500,210,520,600,330][i],face:[0,Math.PI,Math.PI,0,0,Math.PI][i],seat:true});n.shirt=["#3b6ea5","#8a4f7d","#4f8a6b","#b5654a","#555b6e","#c79a3a"][i];return n});
+    this.others=Array.from({length:6},(_,i)=>{const n=S.person(["NAVYA","SIDHU","VENDOR"][i%3],{x:[180,300,1060,1160,200,1100][i],y:[200,500,210,520,600,330][i],face:[0,Math.PI,Math.PI,0,0,Math.PI][i],seat:true});n.shirt=["#3b6ea5","#8a4f7d","#4f8a6b","#b5654a","#555b6e","#c79a3a"][i];return n});
     this.waiter=S.person("VENDOR",{x:900,y:640,face:Math.PI,pose:"walk"});this.wt=0;
   },
   update(dt){S.stepPerson(this.dev,dt);S.stepPerson(this.sree,dt);this.wt+=dt;this.waiter.x=640+Math.cos(this.wt*.5)*420;this.waiter.y=620+Math.sin(this.wt*.5)*30;this.waiter.face=-Math.sin(this.wt*.5)>0?0:Math.PI;this.waiter.ph+=dt*8;Art.updateFx(dt)},
@@ -222,7 +226,7 @@ S.Restaurant={
    ===================================================================== */
 S.Visitors={
   enter(){
-    G.showClock=true;this.dev=S.person("DEVIKA",{x:500,y:330,face:0});this.sree=S.person("SREEDEV",{x:420,y:340,face:0,label:true});this.bro=S.person("BROTHER",{x:1300,y:430,vis:false,face:Math.PI,label:true});
+    G.showClock=true;this.dev=S.person("ANAMIKA",{x:500,y:330,face:0});this.sree=S.person("SREEDEV",{x:420,y:340,face:0,label:true});this.bro=S.person("SIDHU",{x:1300,y:430,vis:false,face:Math.PI,label:true});
     this.carX=-260;this.carV=0;this.carOn=false;this.leaving=false;this.doorGlow=0;this._ar=null;G.chapter(10,"Visitors' Area");A.setMusic("night");
   },
   arrive(){this.carOn=true;this.carV=300;A.sfx("whoosh");return new Promise(r=>{this._ar=r})},

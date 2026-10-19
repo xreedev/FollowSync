@@ -5,21 +5,20 @@ const TAU=Math.PI*2;const {rr,circ,lg,rg,shade}=Art;
 const hash=(n)=>{let x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x)};
 
 /* ---------- routes (names follow the real route) ---------- */
+const DIRS=[[.08,"ANAMIKA","Turn left at the junction!"],[.11,"SREEDEV","It's a straight road. I know the way."],[.3,"ANAMIKA","Take a right here!"],[.33,"SREEDEV","Which right? There is no right."],[.52,"ANAMIKA","Left! Left! …I meant right."],[.55,"SREEDEV","You have never once said the correct one."],[.74,"ANAMIKA","It's that way. Left."],[.77,"SREEDEV","That's a wall. Straight."]];
 S.ROUTES={
-  beach:{title:"To St. Andrews Beach",km:6.1,approx:false,seg:8200,
+  beach:{title:"To St. Andrews Beach",km:6.1,approx:false,seg:4300,
     stops:[{n:"Technopark Main Gate",z:"campus"},{n:"NH 66",z:"highway"},{n:"Kazhakoottam Junction",z:"junction"},{n:"Kazhakuttom Rd",z:"town"},{n:"Menamkulam",z:"town"},{n:"Veli – Perumathura Rd",z:"coast"},{n:"St. Andrews Beach",z:"coast"}],
-    banter:[[.02,"SREEDEV","Helmet on? Hold tight."],[.03,"DEVIKA","Obviously."],[.17,"SREEDEV","This road has opinions about speed."],[.2,"DEVIKA","Eyes on the road, Sreedev."],
-      [.34,"DEVIKA","Red light! Stop. STOP."],[.36,"SREEDEV","I see it. I'm a professional."],[.5,"DEVIKA","Did you just lean on purpose?"],[.52,"SREEDEV","Aerodynamics."],
-      [.64,"DEVIKA","Chai stall! Can we—"],[.66,"SREEDEV","Later. Beach first."],[.8,"SREEDEV","Can you hear the sea?"],[.82,"DEVIKA","…Yes. Slower. Please."]]},
-  istanbul:{title:"To Istanbul Rolls & Grills",km:2.1,approx:true,seg:7200,
+    banter:[[.02,"SREEDEV","Helmet on? Hold tight."],[.03,"ANAMIKA","Obviously."],...DIRS,[.88,"SREEDEV","Can you hear the sea?"],[.9,"ANAMIKA","…Yes. Right turn now. Real one."]]},
+  istanbul:{title:"To Istanbul Rolls & Grills",km:2.1,approx:true,seg:3500,
     stops:[{n:"IIITMK",z:"campus"},{n:"Technopark Rd",z:"campus"},{n:"Service Rd",z:"town"},{n:"Istanbul Rolls & Grills – Royale",z:"town"}],
-    banter:[[.04,"SREEDEV","IIITMK. Nobody here is awake. Just us."],[.3,"DEVIKA","Slow down, it's a service road."],[.5,"SREEDEV","I can smell the grill already."],[.7,"DEVIKA","You said that about the canteen."],[.8,"SREEDEV","The canteen smelled of indecision."]]},
-  waffles:{title:"To Waffles",km:3.0,approx:true,placeholder:true,seg:7200,
+    banter:[[.04,"SREEDEV","IIITMK. Nobody here is awake. Just us."],[.16,"ANAMIKA","Turn left!"],[.2,"SREEDEV","I live here. Sort of."],[.45,"ANAMIKA","Right! …Left. Sorry."],[.7,"SREEDEV","I can smell the grill already."],[.74,"ANAMIKA","Take the next left."],[.78,"SREEDEV","That's the restaurant. It's straight."]]},
+  waffles:{title:"To Waffles",km:3.0,approx:true,placeholder:true,seg:3500,
     stops:[{n:"Technopark Main Gate",z:"campus"},{n:"NH 66",z:"highway"},{n:"Waffles",z:"town"}],
-    banter:[[.04,"SREEDEV","Dessert for dinner. Respect to us."],[.35,"DEVIKA","Chocolate. Extra chocolate."],[.6,"SREEDEV","Obviously. We're consistent."],[.8,"DEVIKA","Is that the place? It smells sweet."]]},
+    banter:[[.04,"SREEDEV","Dessert for dinner. Respect to us."],[.2,"ANAMIKA","Turn right here!"],[.24,"SREEDEV","There's a hedge on the right."],[.55,"ANAMIKA","Left! …No, right."],[.6,"SREEDEV","I'm going straight."],[.82,"ANAMIKA","Is that the place? It smells sweet."]]},
 };
 S.reverseRoute=(r,title,destName)=>{const stops=[...r.stops].reverse().map(s=>({n:s.n,z:s.z}));stops[stops.length-1]={n:destName||"Technopark Phase 1",z:"campus"};
-  return{title,km:r.km,approx:true,seg:Math.round(r.seg*.7),stops,banter:[]}};
+  return{title,km:r.km,approx:true,seg:Math.round(r.seg*.7),stops,banter:[[.15,"ANAMIKA","Left here, I think."],[.18,"SREEDEV","We came from the right."],[.45,"ANAMIKA","Right. …The other right."],[.48,"SREEDEV","I give up. I'm using my own map."]]}};
 
 /* ---------- vehicles ---------- */
 function drawTruckish(g,x,y,kind,t,dirL){
@@ -47,7 +46,7 @@ S.Ride={
   enter(o){
     o=o||{};this.route=o.route;this.night=o.night!==false;this.x=0;this.v=0;this.speed=.55;this.wheel=0;this.bounce=0;this.done=false;this.res=null;this.stopAt=null;
     this.total=this.route.seg*(this.route.stops.length-1);this.sign=-1;this.signT=0;this.nextBanter=0;this.traffic=[];this.tNext=1;this.light=0;
-    this.dev=Art.actor("DEVIKA",{});this.sree=Art.actor("SREEDEV",{});this.devA={bx:0,by:0};this.sreeA={bx:0,by:0};
+    this.dev=Art.actor("ANAMIKA",{});this.sree=Art.actor("SREEDEV",{});this.devA={bx:0,by:0};this.sreeA={bx:0,by:0};
     this.hornT=0;this.started=false;this.ending=false;this.sparks=[];this.hintT=6;G.showClock=true;G.chapter(9,"The Ride");A.setMusic("ride");
     this.finalBrake=false;this.arrivalX=this.total-380;this.tFrom=o.tFrom;this.tTo=o.tTo;
   },
@@ -73,7 +72,7 @@ S.Ride={
     if(this.signT>0)this.signT-=dt;
     // banter
     const f=this.x/this.arrivalX;const b=this.route.banter;
-    while(this.nextBanter<b.length&&f>=b[this.nextBanter][0]){const l=b[this.nextBanter++];G.bubble(l[1]==="DEVIKA"?this.devA:this.sreeA,l[2],3600)}
+    while(this.nextBanter<b.length&&f>=b[this.nextBanter][0]){const l=b[this.nextBanter++];G.bubble(l[1]==="ANAMIKA"?this.devA:this.sreeA,l[2],3600)}
     // traffic oncoming
     this.tNext-=dt;if(this.tNext<=0&&this.x<this.arrivalX-1500){this.tNext=G.rand(1.6,4.2);const kinds=["car1","car2","car3","car4","auto","auto","bus","car1"];this.traffic.push({x:1500,k:kinds[(Math.random()*kinds.length)|0],v:G.rand(380,620)})}
     for(const c of this.traffic){c.x-=(c.v+this.v)*dt}this.traffic=this.traffic.filter(c=>c.x>-700);
@@ -143,7 +142,7 @@ S.Ride={
     // passenger (behind) then driver
     const R=64,fl=this.speed;const hairFlow=fl*1.1;
     g.save();g.translate(bx,by);
-    Art.rider(g,Art.CHARS.DEVIKA,"#f08ab4",{x:36,y:-R-82+this.bounce*.4,lean:.34+fl*.1,handX:74,handY:6,t,hairFlow,passenger:true});
+    Art.rider(g,Art.CHARS.ANAMIKA,"#f08ab4",{x:36,y:-R-82+this.bounce*.4,lean:.34+fl*.1,handX:74,handY:6,t,hairFlow,passenger:true});
     Art.rider(g,Art.CHARS.SREEDEV,"#1a1d24",{x:112,y:-R-88+this.bounce*.4,lean:.62+fl*.16,handX:64,handY:-52,t});
     g.restore();g.restore();
     this.devA.bx=bx+10;this.devA.by=by-R-82-Math.cos(.34)*108-150;this.sreeA.bx=bx+112+Math.sin(.62)*108+8;this.sreeA.by=by-R-88-Math.cos(.62)*108-86;

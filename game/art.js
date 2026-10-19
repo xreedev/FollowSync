@@ -14,12 +14,12 @@ Art.shade=shade;
 
 /* ---------- character definitions ---------- */
 Art.CHARS={
-  DEVIKA:{skin:"#d49b74",hair:"#171012",style:"long",top:"#e8832a",bottom:"#2c3150",shoe:"#e6d6c6",watch:true,color:"#ff9d4a"},
+  ANAMIKA:{skin:"#d49b74",hair:"#171012",style:"long",top:"#e8832a",bottom:"#2c3150",shoe:"#e6d6c6",watch:true,color:"#ff9d4a"},
   SREEDEV:{skin:"#c68a64",hair:"#15100e",style:"short",top:"#7a1f3d",top2:"#2a2f3b",bottom:"#2b3550",shoe:"#e8e8ea",lanyard:true,color:"#ffd166"},
   NAVYA:{skin:"#dcab86",hair:"#2a1a16",style:"bun",top:"#7f6bd0",top2:"#b9a2ff",bottom:"#3a3f5c",shoe:"#d8ccdc",lash:true,color:"#b9a2ff"},
-  BROTHER:{skin:"#c28862",hair:"#17120f",style:"short",top:"#3b8d6e",top2:"#52a888",bottom:"#2c3348",shoe:"#222",beard:true,color:"#7be0b0"}
+  SIDHU:{skin:"#c28862",hair:"#17120f",style:"short",top:"#3b8d6e",top2:"#52a888",bottom:"#2c3348",shoe:"#222",beard:true,color:"#7be0b0"}
 };
-Art.CHARS["HER BROTHER"]=Art.CHARS.BROTHER;
+Art.CHARS["SIDHU"]=Art.CHARS.SIDHU;
 
 Art.actor=function(name,o){
   const c=Art.CHARS[name];
@@ -153,7 +153,7 @@ Art.drawActor=function(g,a,t){
   // ear
   circ(g,hx-8,hy+4,6,shade(d.skin,-.08));
   hairFront(g,hx,hy,36,d,d.style,true);
-  const speaking=G.speaker&&(G.speaker===a.name||G.speaker==="HER BROTHER"&&a.name==="BROTHER")&&G.typing;
+  const speaking=G.speaker&&(G.speaker===a.name||G.speaker==="SIDHU"&&a.name==="SIDHU")&&G.typing;
   let ex=a.expr;if(speaking&&(ex==="neutral"))ex=(Math.sin(t*14)>0)?"grin":"neutral";
   face(g,hx,hy,36,ex,d,t,a.blink,true);
   if(a.helmet)Art.helmet(g,hx,hy,a.helmet);
