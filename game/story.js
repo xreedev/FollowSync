@@ -434,8 +434,10 @@ async function restaurantScene(R,kind){
   G.setTime(19,58);
   await R.go(S.Restaurant,{kind,fade:700});
   if(kind==="istanbul"){
-    await R.nar("Istanbul Rolls & Grills. Smoke, spice, and a table by the wall.");
-    await R.say("SREEDEV","Al faham, kuboos, extra mayonnaise.");
+    await R.nar("Istanbul Rolls & Grills. Bright, busy, and a table under the #YOURS ISTANBUL sign. They sit side by side.");
+    await R.say("SREEDEV","Loaded fries. And one shawarma.");
+    await R.say("ANAMIKA","One? For both of us?");
+    await R.say("SREEDEV","We're sharing. That's the point of sitting this close.");
     await R.say("ANAMIKA","You decided that in two seconds. Where was this at lunch?");
     await R.say("SREEDEV","Dinner is easy. Lunch is complicated.");
   }else{
@@ -456,7 +458,7 @@ async function ch10(R){
   await R.nar("9:15 PM. Technopark Phase 1, visitors' area.");
   await R.say("SREEDEV","Message me when you reach.");
   await R.say("ANAMIKA","I will.");
-  await R.nar("Her brother Sidhu's Mahindra BE 6 pulls up.");
+  await R.nar("BE 6 arrives.");
   await R.p(V.arrive());
   V.bro.vis=true;V.bro.x=760;V.bro.y=540;V.doorGlow=1;A.sfx("door");
   if(!DEV)await S.goTo(V.bro,640,370,{speed:60});else{V.bro.x=640;V.bro.y=370}

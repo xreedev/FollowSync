@@ -179,15 +179,54 @@ S.Beach={
 S.Restaurant={
   enter(o){
     o=o||{};this.kind=o.kind||"istanbul";G.showClock=true;
-    this.dev=S.person("ANAMIKA",{label:true,x:520,y:380,face:0,seat:true});this.sree=S.person("SREEDEV",{x:780,y:380,face:Math.PI,seat:true,label:true});
+    const ist0=this.kind==="istanbul";this.dev=S.person("ANAMIKA",{label:true,x:ist0?612:520,y:ist0?456:380,face:ist0?-Math.PI/2:0,seat:true});this.sree=S.person("SREEDEV",{x:ist0?692:780,y:ist0?456:380,face:ist0?-Math.PI/2:Math.PI,seat:true,label:true});
     G.chapter(9,this.kind==="istanbul"?"Istanbul Rolls & Grills":"Waffles");A.setMusic("warm");
     this.others=Array.from({length:6},(_,i)=>{const n=S.person(["NAVYA","SIDHU","VENDOR"][i%3],{x:[180,300,1060,1160,200,1100][i],y:[200,500,210,520,600,330][i],face:[0,Math.PI,Math.PI,0,0,Math.PI][i],seat:true});n.shirt=["#3b6ea5","#8a4f7d","#4f8a6b","#b5654a","#555b6e","#c79a3a"][i];return n});
     this.waiter=S.person("VENDOR",{x:900,y:640,face:Math.PI,pose:"walk"});this.wt=0;
   },
   update(dt){S.stepPerson(this.dev,dt);S.stepPerson(this.sree,dt);this.wt+=dt;this.waiter.x=640+Math.cos(this.wt*.5)*420;this.waiter.y=620+Math.sin(this.wt*.5)*30;this.waiter.face=-Math.sin(this.wt*.5)>0?0:Math.PI;this.waiter.ph+=dt*8;Art.updateFx(dt)},
+  chair(g,x,y,a){g.save();g.translate(x,y);g.rotate(a);g.fillStyle="rgba(0,0,0,.3)";g.beginPath();g.roundRect(-11,-11,26,26,8);g.fill();g.fillStyle="#1d1f24";g.beginPath();g.roundRect(-13,-13,26,26,9);g.fill();
+    g.strokeStyle="#3a3d45";g.lineWidth=1.2;for(let i=-9;i<=9;i+=4.5){g.beginPath();g.moveTo(i,-11);g.lineTo(i,11);g.stroke()}g.fillStyle="#14161a";g.fillRect(-14,-13,5,26);g.restore()},
+  sqTable(g,x,y,w,h){g.fillStyle="rgba(0,0,0,.3)";g.fillRect(x-w/2+5,y-h/2+7,w,h);g.fillStyle="#c7a06a";g.fillRect(x-w/2,y-h/2,w,h);g.fillStyle="#d6b17c";g.fillRect(x-w/2+3,y-h/2+3,w-6,h-6);g.strokeStyle="rgba(120,80,30,.35)";g.lineWidth=1;for(let i=1;i<5;i++){g.beginPath();g.moveTo(x-w/2+3,y-h/2+i*h/5);g.lineTo(x+w/2-3,y-h/2+i*h/5);g.stroke()}g.fillStyle="#2a2b30";g.beginPath();g.arc(x,y,4,0,TAU);g.fill()},
+  drawIst(g,t){
+    // light wood floor
+    g.fillStyle="#b48a58";g.fillRect(0,0,1280,720);for(let y=0;y<720;y+=34){g.fillStyle=y/34%2?"#bd9462":"#ad8450";g.fillRect(0,y,1280,33);g.fillStyle="rgba(0,0,0,.12)";g.fillRect(0,y+33,1280,1)}
+    for(let i=0;i<120;i++){g.fillStyle="rgba(90,60,25,.12)";g.fillRect((hash(i)*1280)|0,(hash(i+3)*720)|0,40,1.4)}
+    // white back wall with the sign and yellow tile column
+    g.fillStyle="#dfe0dd";g.fillRect(0,0,1280,150);g.fillStyle="#c9cac6";g.fillRect(0,146,1280,6);
+    g.fillStyle="#f4b21c";g.fillRect(40,0,90,146);for(let y=0;y<146;y+=30)for(let x=40;x<130;x+=30){g.fillStyle=(x/30+y/30)%2?"#f4b21c":"#e0951a";g.fillRect(x,y,30,30)}
+    g.fillStyle="#f6f6f4";g.fillRect(430,22,340,104);g.strokeStyle="#aaa";g.lineWidth=2;g.strokeRect(430,22,340,104);
+    g.fillStyle="#111";g.font="800 34px system-ui";g.textAlign="center";g.fillText("#YOURS",600,76);g.fillText("ISTANBUL",600,112);
+    g.fillStyle="#f4b21c";g.beginPath();g.moveTo(820,40);g.lineTo(1000,40);g.lineTo(1000,120);g.lineTo(820,120);g.closePath();g.fill();g.fillStyle="#7a1d10";g.font="800 24px system-ui";g.fillText("ISTANBUL",910,76);g.font="700 14px system-ui";g.fillText("ROLLS & GRILLS · ROYALE",910,100);g.textAlign="left";
+    // shawarma counter along the top-right
+    g.fillStyle="#2b2b30";g.fillRect(1060,170,200,90);g.fillStyle="#3b3b42";g.fillRect(1066,176,188,40);
+    for(let i=0;i<3;i++){const cx=1100+i*60;g.fillStyle="#8a4a22";g.beginPath();g.ellipse(cx,230,17,13,0,0,TAU);g.fill();g.fillStyle="#c26a3a";g.beginPath();g.ellipse(cx,228,13,9,0,0,TAU);g.fill();g.fillStyle="#ff7a1c";const fh=7+Math.sin(t*9+i)*3;g.fillRect(cx-14,246,3,-fh);g.fillRect(cx+11,246,3,-fh)}
+    for(let i=0;i<5;i++){g.fillStyle=`rgba(255,255,255,${.1-i*.015})`;g.beginPath();g.arc(1160+Math.sin(t+i)*14+i*8,164-((t*18+i*14)%70),10+i*2,0,TAU);g.fill()}
+    // other tables with black wicker chairs
+    for(const [x,y] of [[250,260],[900,300],[260,560],[1000,560],[400,400]]){this.sqTable(g,x,y,96,76);for(const [dx,dy,a] of [[-62,0,0],[62,0,Math.PI],[0,-54,Math.PI/2],[0,54,-Math.PI/2]])this.chair(g,x+dx,y+dy,a);g.fillStyle="#f6f1ec";g.beginPath();g.ellipse(x-18,y+2,14,8,0,0,TAU);g.fill()}
+    for(let i=0;i<4;i++){const n=this.others[i];n.x=[190,970,200,1060][i];n.y=[262,300,562,560][i];n.face=[0,Math.PI,0,Math.PI][i];S.drawPerson(g,n,t,K*.9)}
+    // our table: two chairs on the south side, side by side
+    this.sqTable(g,652,360,230,100);
+    this.chair(g,612,440,-Math.PI/2);this.chair(g,692,440,-Math.PI/2);
+    // loaded fries (left) and one shawarma (right)
+    g.fillStyle="#f1f1ee";g.beginPath();g.roundRect(572,334,104,64,10);g.fill();g.strokeStyle="#cfcfc9";g.lineWidth=1.5;g.stroke();
+    for(let i=0;i<26;i++){const a=hash(i)*6.28,r=hash(i+5)*24;g.save();g.translate(624+Math.cos(a)*r*1.4,366+Math.sin(a)*r*.8);g.rotate(hash(i+9)*3);g.fillStyle="#e8b94a";g.fillRect(-9,-1.6,18,3.2);g.restore()}
+    g.fillStyle="rgba(255,248,230,.85)";for(let i=0;i<7;i++){g.beginPath();g.ellipse(600+hash(i+30)*50,352+hash(i+31)*30,9,3.6,hash(i)*3,0,TAU);g.fill()}
+    g.fillStyle="#c93a2a";for(let i=0;i<6;i++){g.beginPath();g.arc(596+hash(i+60)*56,350+hash(i+61)*34,2.6,0,TAU);g.fill()}
+    g.fillStyle="#d8c9a8";for(let i=0;i<4;i++){g.beginPath();g.arc(600+hash(i+80)*52,352+hash(i+81)*30,3.4,0,TAU);g.fill()}
+    g.fillStyle="#f1f1ee";g.beginPath();g.roundRect(706,340,76,52,10);g.fill();g.strokeStyle="#cfcfc9";g.stroke();
+    g.save();g.translate(744,366);g.rotate(-.15);g.fillStyle="#e4c58a";g.beginPath();g.roundRect(-32,-11,64,22,11);g.fill();g.strokeStyle="#a47a3a";g.lineWidth=1.2;g.stroke();
+    g.fillStyle="#7a3d1c";g.fillRect(-26,-6,52,4);g.fillStyle="#a8c94a";g.fillRect(-24,0,48,3);g.fillStyle="#fff7e0";g.fillRect(-26,4,52,3);g.restore();
+    for(let i=0;i<3;i++){g.strokeStyle=`rgba(255,255,255,${.34-i*.08})`;g.lineWidth=2;const o=(t*16+i*10)%24;g.beginPath();g.arc(612+i*14,326-o*.5,4+o*.15,0,TAU);g.stroke();g.beginPath();g.arc(740+i*10,332-o*.5,3+o*.15,0,TAU);g.stroke()}
+    S.drawPerson(g,this.dev,t,K);S.drawPerson(g,this.sree,t,K);
+    S.drawPerson(g,this.waiter,t,K*.9);
+    g.save();g.globalCompositeOperation="lighter";for(const [x,y] of [[300,300],[650,300],[1000,300],[650,560]]){const gr=g.createRadialGradient(x,y,2,x,y,190);gr.addColorStop(0,"rgba(255,235,190,.2)");gr.addColorStop(1,"rgba(255,235,190,0)");g.fillStyle=gr;g.fillRect(x-190,y-190,380,380)}g.restore();
+    anchor(this.dev,0,0,1);anchor(this.sree,0,0,1);this.dev.by-=8;this.sree.by-=8;Art.drawFx(g);G.drawBubbles(g);S.vignette(g,.32);
+  },
   table(g,x,y,rx,ry,col){g.fillStyle="rgba(0,0,0,.32)";g.beginPath();g.ellipse(x+5,y+7,rx,ry,0,0,TAU);g.fill();g.fillStyle=col;g.beginPath();g.ellipse(x,y,rx,ry,0,0,TAU);g.fill();g.strokeStyle="rgba(0,0,0,.3)";g.lineWidth=2;g.stroke()},
   draw(g){
     const t=G.t,ist=this.kind==="istanbul";
+    if(ist){this.drawIst(g,t);return}
     // floor
     g.fillStyle=ist?"#3a1c16":"#3b2622";g.fillRect(0,0,1280,720);
     for(let x=0;x<1280;x+=64)for(let y=0;y<720;y+=64){g.fillStyle=((x+y)/64)%2?(ist?"#2a8f9a":"#7a4a3a"):(ist?"#1f6f7a":"#6a3d30");g.globalAlpha=.55;g.fillRect(x,y,64,64);g.globalAlpha=1}
