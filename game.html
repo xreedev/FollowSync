@@ -4,7 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Everyday</title>
-<link rel="icon" href="data:,">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f1217">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
   :root{--u:1px;--ink:#f3efe8;--mute:#a8b0bd;--gold:#ffd166;--rose:#ff9db8;--accent:#ff8a3d}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -106,5 +112,6 @@
 <script src="game/s_ride.js"></script>
 <script src="game/s_end.js"></script>
 <script src="game/story.js"></script>
+<script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </body>
 </html>

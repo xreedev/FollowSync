@@ -4,7 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Office Explorer</title>
-<link rel="icon" href="data:,">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f1217">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
   :root{--bg:#0f1217;--panel:#171b22;--line:#2a313c;--ink:#e8ebf0;--mute:#8f99a8;--accent:#e8832a}
   *{box-sizing:border-box}
@@ -988,5 +994,6 @@ resize();
 window.__office={konami,startDisco,openSnake,openTTT,openLeave,openNap,openBugs,get disco(){return disco},step,P,free,findPath,grid,GX,GY,TOUR,NPCS,INTERACT,bonk,hitNearest,toggleServer,openCoffee,openCarrom,closeGame,startTour,setPanel,get serverOn(){return serverOn},get bonks(){return bonks},get paused(){return paused},get path(){return path},get zone(){return current}};
 requestAnimationFrame(frame);
 </script>
+<script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </body>
 </html>

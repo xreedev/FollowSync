@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1030"/><stop offset=".5" stop-color="#3a2a5c"/><stop offset=".82" stop-color="#e8765a"/><stop offset="1" stop-color="#ffb26b"/>
+    </linearGradient>
+    <radialGradient id="sun" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#fff2c8"/><stop offset=".45" stop-color="#ffb26b"/><stop offset="1" stop-color="#ffb26b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b9f1f4"/><stop offset="1" stop-color="#3f9aa8"/>
+    </linearGradient>
+    <linearGradient id="bld" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1d2250"/><stop offset="1" stop-color="#10132e"/>
+    </linearGradient>
+    <clipPath id="r"><rect width="512" height="512" rx="112"/></clipPath>
+  </defs>
+  <g clip-path="url(#r)">
+    <rect width="512" height="512" fill="url(#sky)"/>
+    <g fill="#fff" opacity=".85"><circle cx="70" cy="70" r="3"/><circle cx="150" cy="44" r="2.4"/><circle cx="240" cy="86" r="2"/><circle cx="410" cy="60" r="2.6"/><circle cx="470" cy="130" r="2"/><circle cx="106" cy="140" r="2"/></g>
+    <circle cx="372" cy="250" r="118" fill="url(#sun)"/>
+    <!-- hills -->
+    <path d="M0 360 C120 320 200 380 320 350 C400 330 460 350 512 340 V512 H0Z" fill="#241f4a"/>
+    <!-- Nila building -->
+    <rect x="86" y="214" width="340" height="226" rx="10" fill="url(#bld)"/>
+    <rect x="86" y="206" width="340" height="14" rx="6" fill="#2a2f66"/>
+    <g fill="#ffcf80">
+      <rect x="112" y="244" width="30" height="22" rx="3"/><rect x="156" y="244" width="30" height="22" rx="3" fill="#6b78b8" opacity=".55"/><rect x="200" y="244" width="30" height="22" rx="3"/><rect x="282" y="244" width="30" height="22" rx="3" fill="#6b78b8" opacity=".55"/><rect x="326" y="244" width="30" height="22" rx="3"/><rect x="370" y="244" width="30" height="22" rx="3"/>
+      <rect x="112" y="284" width="30" height="22" rx="3" fill="#6b78b8" opacity=".55"/><rect x="156" y="284" width="30" height="22" rx="3"/><rect x="200" y="284" width="30" height="22" rx="3"/><rect x="282" y="284" width="30" height="22" rx="3"/><rect x="326" y="284" width="30" height="22" rx="3" fill="#6b78b8" opacity=".55"/><rect x="370" y="284" width="30" height="22" rx="3"/>
+      <rect x="112" y="324" width="30" height="22" rx="3"/><rect x="156" y="324" width="30" height="22" rx="3"/><rect x="326" y="324" width="30" height="22" rx="3"/><rect x="370" y="324" width="30" height="22" rx="3" fill="#6b78b8" opacity=".55"/>
+    </g>
+    <!-- glass pyramid -->
+    <path d="M176 440 L256 330 L336 440Z" fill="url(#glass)" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M256 330 L256 440 M216 385 L296 385" stroke="#fff" stroke-opacity=".7" stroke-width="3"/>
+    <path d="M176 440 L256 330 L336 440Z" fill="#ffd9a0" opacity=".18"/>
+    <!-- ground -->
+    <rect x="0" y="440" width="512" height="72" fill="#12142e"/>
+    <rect x="0" y="440" width="512" height="6" fill="#ffb26b" opacity=".6"/>
+    <!-- two little people -->
+    <g>
+      <ellipse cx="206" cy="476" rx="26" ry="7" fill="#000" opacity=".35"/><ellipse cx="206" cy="458" rx="15" ry="20" fill="#e8832a"/><circle cx="206" cy="436" r="12" fill="#f1c9a5"/><path d="M194 436 a12 12 0 0 1 24 0 v-2 a12 12 0 0 0 -24 0z" fill="#1d1a1c"/>
+      <ellipse cx="306" cy="476" rx="26" ry="7" fill="#000" opacity=".35"/><ellipse cx="306" cy="458" rx="15" ry="20" fill="#7a1f3d"/><circle cx="306" cy="436" r="12" fill="#d9a577"/><path d="M294 436 a12 12 0 0 1 24 0 v-3 a12 12 0 0 0 -24 0z" fill="#1c1614"/>
+    </g>
+    <!-- crown above Sreedev -->
+    <g transform="translate(306 414)">
+      <path d="M-18 0 L-18 -18 L-9 -8 L0 -22 L9 -8 L18 -18 L18 0Z" fill="#f2c230" stroke="#9a6d00" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="0" cy="-24" r="3.4" fill="#d1342b"/><circle cx="-18" cy="-20" r="2.8" fill="#4aa3ff"/><circle cx="18" cy="-20" r="2.8" fill="#4aa3ff"/>
+    </g>
+  </g>
+</svg>
