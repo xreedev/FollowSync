@@ -68,7 +68,7 @@
     <div id="acts"><button id="aE">E</button><button id="aH">👋</button></div>
   </div>
   <aside>
-    <div id="ref">Layout drawn from your atrium photo (a glass pyramid in the middle, four kiosks, umbrella tables, brick planters). The photo itself is not bundled.</div>
+    <div id="ref">The courtyard is one square split into four equal squares by two cross paths, with one kiosk centred in each and the glass pyramid at the crossing. Style taken from your atrium photo, which is not bundled.</div>
     <h2 id="ptitle">Nila atrium</h2>
     <p id="pdesc">Walk up to a kiosk and press E to order.</p>
     <p class="small" id="pnote"></p>
@@ -85,40 +85,40 @@
 <script>
 "use strict";
 /* ============ MAP DATA ============ */
-const WORLD=[0,0,1200,920], COURT=[60,120,1140,860];
+const WORLD=[0,0,1100,1100], COURT=[130,130,970,970];
 const WALK=[COURT];
 const BLOCK=[], $=id=>document.getElementById(id);
 const inR=(x,y,r)=>x>=r[0]&&x<=r[2]&&y>=r[1]&&y<=r[3];
 const addB=(x1,y1,x2,y2)=>BLOCK.push([x1,y1,x2,y2]);
 
-// central glass pyramid
-const PYR=[455,310,745,530]; addB(...PYR);
-// the four kiosks. front = side the counter faces; (cx,cy) = where you stand to order
+// the courtyard is one square split into four equal squares (cross paths at x=550 and y=550); one kiosk centred in each
+const QC=[[331,331],[769,331],[331,769],[769,769]];
+// central glass pyramid at the crossing
+const PYR=[430,460,670,640]; addB(...PYR);
+// kiosks: 150x100, centred in their square. front = side the counter faces; (cx,cy) = where you stand to order
 const KIOSKS=[
- {id:"k1",short:"Kiosk 1",name:"Kiosk 1 · Tea & coffee",r:[90,300,240,400],front:"E",cx:262,cy:350,roof:"tile",
-  menu:[["Chai",15],["Filter coffee",25],["Black tea",10],["Cold coffee",40]],txt:"West side, orange tile roof. Press E to order."},
- {id:"k2",short:"Kiosk 2",name:"Kiosk 2 · Snacks",r:[700,170,870,260],front:"S",cx:785,cy:282,roof:"pitch",
-  menu:[["Samosa",15],["Banana chips",20],["Sandwich",45],["Cutlet",25]],txt:"North side, pitched orange roof. Press E to order."},
- {id:"k3",short:"Kiosk 3",name:"Kiosk 3 · Juice bar",r:[975,330,1125,430],front:"W",cx:950,cy:380,roof:"tile",
-  menu:[["Lime soda",25],["Watermelon",35],["Pineapple",40],["Sugarcane",30]],txt:"East side, next to the palm. Press E to order."},
- {id:"k4",short:"Kiosk 4",name:"Kiosk 4 · Ice cream",r:[810,700,975,775],front:"N",cx:892,cy:680,roof:"pink",
-  menu:[["Vanilla",30],["Choco bar",40],["Kulfi",35],["Falooda",70]],txt:"South-east corner, pink counter. Press E to order."}
+ {id:"k1",short:"Kiosk 1",name:"Kiosk 1 · Tea & coffee",front:"E",roof:"tile",cx:436,cy:331,
+  menu:[["Chai",15],["Filter coffee",25],["Black tea",10],["Cold coffee",40]],txt:"North-west square, orange tile roof. Press E to order."},
+ {id:"k2",short:"Kiosk 2",name:"Kiosk 2 · Snacks",front:"W",roof:"pitch",cx:664,cy:331,
+  menu:[["Samosa",15],["Banana chips",20],["Sandwich",45],["Cutlet",25]],txt:"North-east square, pitched orange roof. Press E to order."},
+ {id:"k3",short:"Kiosk 3",name:"Kiosk 3 · Juice bar",front:"E",roof:"tile",cx:436,cy:769,
+  menu:[["Lime soda",25],["Watermelon",35],["Pineapple",40],["Sugarcane",30]],txt:"South-west square. Press E to order."},
+ {id:"k4",short:"Kiosk 4",name:"Kiosk 4 · Ice cream",front:"W",roof:"pink",cx:664,cy:769,
+  menu:[["Vanilla",30],["Choco bar",40],["Kulfi",35],["Falooda",70]],txt:"South-east square, pink counter. Press E to order."}
 ];
-KIOSKS.forEach(k=>addB(...k.r));
-// umbrella clusters: [x,y,colour]
-const UMB=[];
-const cluster=(pts,c)=>pts.forEach(p=>UMB.push({x:p[0],y:p[1],c}));
-cluster([[170,610],[270,690],[370,610],[170,770],[290,810],[420,730]],"dark");
-cluster([[240,200],[350,170],[420,250]],"dark");
-cluster([[560,190],[640,250],[500,255]],"yellow");
-cluster([[1040,620],[1100,720],[1020,800],[950,590]],"orange");
-cluster([[1060,500],[1000,560]],"green");
-for(const u of UMB)addB(u.x-11,u.y-11,u.x+11,u.y+11);
-// planters with trees and palms
-const PLANT=[[320,260],[560,640],[690,620],[130,470],[1040,300],[1060,610],[700,830],[420,420],[800,560]];
+KIOSKS.forEach((k,i)=>{const [qx,qy]=QC[i];k.r=[qx-75,qy-50,qx+75,qy+50];addB(...k.r)});
+// umbrella tables: six per square, each square its own umbrella colour
+const UMB=[],UCOL=["dark","yellow","orange","green"];
+const OFF=[[-140,-130],[0,-150],[140,-130],[-140,130],[0,150],[140,130]];
+QC.forEach(([qx,qy],i)=>OFF.forEach(o=>UMB.push({x:qx+o[0],y:qy+o[1],c:UCOL[i]})));
+// planters with trees, and palms in the outer corners
+const PLANT=[[385,415],[715,415],[385,685],[715,685],[550,175],[550,925],[925,550]];
 for(const p of PLANT)addB(p[0]-18,p[1]-18,p[0]+18,p[1]+18);
-const PALMS=[[200,520],[1090,260],[330,470]];
+const PALMS=[[172,172],[928,172],[172,928],[928,928]];
 for(const p of PALMS)addB(p[0]-5,p[1]-5,p[0]+5,p[1]+5);
+// drop tables that would sit on the pyramid plaza or under a palm, then add blockers for the rest
+for(let i=UMB.length-1;i>=0;i--){const u=UMB[i];if(PALMS.some(p=>Math.hypot(p[0]-u.x,p[1]-u.y)<62)||inR(u.x,u.y,[375,405,725,695]))UMB.splice(i,1)}
+for(const u of UMB)addB(u.x-11,u.y-11,u.x+11,u.y+11);
 
 /* ============ COLLISION + PATHFINDING ============ */
 const HB=5;
@@ -188,15 +188,16 @@ function drawWorld(t){
   ctx.fillStyle="#0e1014";ctx.fillRect(-300,-300,WORLD[2]+600,WORLD[3]+600);
   facade();
   // paving
-  ctx.fillStyle=PAT.brick;ctx.fillRect(...[COURT[0],COURT[1],COURT[2]-COURT[0],COURT[3]-COURT[1]]);
-  ctx.fillStyle=PAT.grey;ctx.fillRect(390,250,420,350);ctx.strokeStyle="#e8d9c8";ctx.lineWidth=3;ctx.strokeRect(390,250,420,350);
-  for(const [x,y,w,h] of [[140,330,360,60],[800,440,330,50],[560,600,60,230]]){ctx.fillStyle=PAT.grey;ctx.fillRect(x,y,w,h)}
-  ctx.fillStyle="rgba(255,235,200,.08)";ctx.fillRect(COURT[0],COURT[1],COURT[2]-COURT[0],40);
-  // steps (decor, walkable)
-  steps(120,520,150,60,"h");steps(880,520,200,56,"h");steps(850,120,120,30,"h");steps(66,200,40,100,"v");
-  // stairs landing up to the office balcony
-  ctx.fillStyle="#d6d9de";ctx.fillRect(66,126,70,70);for(let i=0;i<6;i++){ctx.fillStyle=i%2?"#bfc3ca":"#d6d9de";ctx.fillRect(66+i*11,126,11,70)}
-  ctx.fillStyle="#e8832a";ctx.font="700 9px system-ui";ctx.textAlign="center";ctx.fillText("STAIRS ↑ OFFICE",101,208);
+  ctx.fillStyle=PAT.brick;ctx.fillRect(COURT[0],COURT[1],COURT[2]-COURT[0],COURT[3]-COURT[1]);
+  // cross paths divide the courtyard into four equal squares
+  ctx.fillStyle=PAT.grey;ctx.fillRect(532,COURT[1],36,COURT[3]-COURT[1]);ctx.fillRect(COURT[0],532,COURT[2]-COURT[0],36);
+  ctx.fillRect(400,430,300,240);ctx.strokeStyle="#e8d9c8";ctx.lineWidth=3;ctx.strokeRect(400,430,300,240);
+  ctx.lineWidth=2;ctx.strokeStyle="rgba(232,217,200,.5)";
+  for(const [qx,qy] of [[142,142],[580,142],[142,580],[580,580]])ctx.strokeRect(qx,qy,378,378);
+  ctx.fillStyle="rgba(255,235,200,.07)";ctx.fillRect(COURT[0],COURT[1],COURT[2]-COURT[0],40);
+  // stairs landing at the west end of the cross path, up to the office balcony
+  for(let i=0;i<6;i++){ctx.fillStyle=i%2?"#bfc3ca":"#d6d9de";ctx.fillRect(136+i*10,520,10,60)}
+  ctx.fillStyle="#e8832a";ctx.font="700 9px system-ui";ctx.textAlign="center";ctx.fillText("STAIRS ↑ OFFICE",166,598);
   // pyramid
   pyramid(t);
   // kiosks, tables
@@ -286,7 +287,7 @@ function newPerson(x,y,face){return{x,y,face,shirt:pick(SHIRT),hair:pick(HAIR),s
 const SEATED=[],WALKERS=[];
 for(const u of UMB){ if(R01()<.65){const a=R01()*6.28;const n=newPerson(u.x+Math.cos(a)*21,u.y+Math.sin(a)*21,a+Math.PI);SEATED.push(n)}
   if(R01()<.4){const a=R01()*6.28+2;const n=newPerson(u.x+Math.cos(a)*21,u.y+Math.sin(a)*21,a+Math.PI);SEATED.push(n)}}
-const SPOTS=[[150,250],[300,350],[600,230],[640,600],[900,300],[1090,420],[780,490],[480,590],[260,480],[600,780],[1080,560],[380,760],[880,620],[160,430]];
+const SPOTS=[[550,200],[550,420],[550,700],[550,900],[250,550],[420,550],[700,550],[900,550],[330,480],[770,480],[330,640],[770,640],[240,330],[860,330],[240,780],[860,780]];
 for(let i=0;i<8;i++){const sp=SPOTS[(R01()*SPOTS.length)|0];const n=newPerson(sp[0]+(R01()*20-10),sp[1]+(R01()*20-10),0);WALKERS.push(n)}
 function person(n,t,seated){
   ctx.save();ctx.translate(n.x,n.y);ctx.rotate(n.face);
@@ -322,7 +323,7 @@ function walkAI(dt){
 }
 
 /* ============ PLAYER ============ */
-const P={x:130,y:225,face:Math.PI/2,walk:0,moving:false,swing:0};
+const P={x:236,y:552,face:0,walk:0,moving:false,swing:0};
 function drawPlayer(){
   const {x,y,face,walk,moving}=P,sw=moving?Math.sin(walk)*4:0;
   ctx.save();ctx.translate(x,y);ctx.fillStyle="rgba(0,0,0,.35)";ctx.beginPath();ctx.ellipse(1.5,2.5,9,7,0,0,7);ctx.fill();ctx.rotate(face);
@@ -343,7 +344,7 @@ const keys={};let path=null,tour=null,pending=null,paused=false,marker=null,last
 const kmap={w:"up",arrowup:"up",s:"down",arrowdown:"down",a:"left",arrowleft:"left",d:"right",arrowright:"right"};
 const INTERACT=[
  ...KIOSKS.map(k=>({id:k.id,label:"E: order at "+k.name.split(" · ")[1].toLowerCase()+" ("+k.short+")",rect:k.r,cx:k.cx,cy:k.cy,r:46,act:()=>openKiosk(k)})),
- {id:"stairs",label:"E: take the stairs up to the office balcony",rect:[66,126,136,196],cx:101,cy:222,r:44,act:()=>{location.href="index.html#fromAtrium"}}
+ {id:"stairs",label:"E: take the stairs up to the office balcony",rect:[136,520,196,580],cx:224,cy:550,r:44,act:()=>{location.href="index.html#fromAtrium"}}
 ];
 const near=o=>Math.hypot(P.x-o.cx,P.y-o.cy)<o.r;
 addEventListener("keydown",e=>{
@@ -386,18 +387,18 @@ function updatePrompt(dt){const p=$("prompt");if(flashT>0){flashT-=dt;if(flashT>
   if(o){p.textContent=o.label;p.style.display="block"}else p.style.display="none"}
 
 /* ============ TOUR + PANEL ============ */
-const TOUR=[[262,350],[785,282],[950,380],[892,680],[600,570],[101,222]];let tourIdx=0;
+const TOUR=[[436,331],[664,331],[664,769],[436,769],[550,690],[224,550]];let tourIdx=0;
 const tourBtn=$("tourBtn");
 function startTour(){tourIdx=0;tour=true;pending=null;tourBtn.textContent="■ Stop tour";nextTour()}
 function nextTour(){if(tourIdx>=TOUR.length){stopAuto();return}const pt=TOUR[tourIdx++],p=findPath(P.x,P.y,pt[0],pt[1]);if(!p){nextTour();return}path=p;tour=true}
 tourBtn.onclick=()=>{tour?stopAuto():startTour()};
 const ZONES=[
  ...KIOSKS.map(k=>({id:k.id,name:k.name,txt:k.txt,note:"Menu and prices are placeholders; the photo does not show the signage.",r:[k.r[0]-60,k.r[1]-60,k.r[2]+60,k.r[3]+60]})),
- {id:"pyramid",name:"Glass pyramid",txt:"The skylight at the heart of the atrium, ringed by grey patterned paving.",note:"",r:[PYR[0]-40,PYR[1]-40,PYR[2]+40,PYR[3]+40]},
- {id:"stairs",name:"Stairs to the office",txt:"White stairs up to the balcony of the office map. Press E.",note:"",r:[60,120,150,215]},
- {id:"cafe",name:"Umbrella café",txt:"Round tables under umbrellas: dark grey in the west, yellow in the north, orange and green in the east.",note:"",r:[0,0,0,0]}
+ {id:"pyramid",name:"Glass pyramid",txt:"The skylight at the crossing of the two paths, ringed by grey patterned paving.",note:"",r:[PYR[0]-40,PYR[1]-40,PYR[2]+40,PYR[3]+40]},
+ {id:"stairs",name:"Stairs to the office",txt:"White stairs up to the balcony of the office map. Press E.",note:"",r:[130,500,230,600]},
+ {id:"cafe",name:"Umbrella café",txt:"Round tables under umbrellas in each square: dark grey (north-west), yellow (north-east), orange (south-west), green striped (south-east).",note:"",r:[0,0,0,0]}
 ];
-const OPEN={id:"court",name:"Nila atrium courtyard",txt:"Terracotta brick paving, brick planters with trees, palms and umbrella tables, with the building's balconies all around.",note:"Open to the sky in the photo; the building's storeys rise on all four sides."};
+const OPEN={id:"court",name:"Nila atrium courtyard",txt:"Terracotta brick paving cut by two grey cross paths into four equal squares, with the building's balconies on all four sides.",note:"Open to the sky in the photo; the building's storeys rise on all four sides."};
 function zoneAt(x,y){
   for(const z of ZONES)if(inR(x,y,z.r))return z;
   for(const u of UMB)if(Math.hypot(u.x-x,u.y-y)<48)return ZONES.find(z=>z.id=="cafe");
@@ -408,7 +409,7 @@ function setPanel(z){current=z;$("ptitle").textContent=z.name;$("pdesc").textCon
 function toggleFit(){fitMode=!fitMode;$("fitBtn").textContent=fitMode?"Follow me":"Whole atrium"}
 $("fitBtn").onclick=toggleFit;$("zin").onclick=()=>{viewW=Math.max(280,viewW*.8)};$("zout").onclick=()=>{viewW=Math.min(1000,viewW*1.25)};
 const chips=$("chips");
-for(const [lab,pt] of [["Kiosk 1",[262,350]],["Kiosk 2",[785,282]],["Kiosk 3",[950,380]],["Kiosk 4",[892,680]],["Pyramid",[600,570]],["Office stairs",[101,222]]]){
+for(const [lab,pt] of [["Kiosk 1",[436,331]],["Kiosk 2",[664,331]],["Kiosk 3",[436,769]],["Kiosk 4",[664,769]],["Pyramid",[550,690]],["Office stairs",[224,550]]]){
   const b=document.createElement("button");b.textContent=lab;b.onclick=()=>{if(paused)return;const p=findPath(P.x,P.y,pt[0],pt[1]);if(p){tour=null;pending=null;path=p}};chips.appendChild(b)}
 
 /* ============ KIOSK ORDER DIALOG ============ */
@@ -450,7 +451,7 @@ function frame(now){
   const g=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.4,W/2,H/2,Math.max(W,H)*.75);g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(0,0,0,.45)");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
   requestAnimationFrame(frame);
 }
-if(location.hash=="#fromOffice"){P.x=130;P.y=225}
+if(location.hash=="#fromOffice"){P.x=236;P.y=552}
 resize();
 window.__atrium={step,P,free,findPath,KIOSKS,INTERACT,TOUR,WALKERS,SEATED,UMB,grid,GX,GY,startTour,get paused(){return paused},get path(){return path},get zone(){return current}};
 requestAnimationFrame(frame);
