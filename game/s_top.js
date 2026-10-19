@@ -42,7 +42,7 @@ const tree=(g,x,y,r,night)=>{g.fillStyle="rgba(0,0,0,.28)";g.beginPath();g.arc(x
    ===================================================================== */
 S.Parking={
   enter(){
-    G.showClock=true;this.dev=S.person("ANAMIKA",{x:300,y:420,face:0,k:1});this.sree=S.person("SREEDEV",{x:240,y:360,face:0,label:true});this.lit=false;this.rev=0;
+    G.showClock=true;this.dev=S.person("ANAMIKA",{label:true,x:300,y:420,face:0,k:1});this.sree=S.person("SREEDEV",{x:240,y:360,face:0,label:true});this.lit=false;this.rev=0;
     G.chapter(8,"Seven Thirty");A.setMusic("night");
   },
   async helmets(){await G.wait(700);this.sree.helmet="#1a1d24";A.sfx("click");await G.wait(800);this.dev.helmet="#f08ab4";A.sfx("click");await G.wait(700);this.lit=true;A.sfx("start");await G.wait(900)},
@@ -74,7 +74,7 @@ const BW=2400,SHORE=300;
 S.Beach={
   stations:[560,1500],
   enter(){
-    G.showClock=true;this.z=1.55;this.cam={x:300,y:380};this.dev=S.person("ANAMIKA",{x:160,y:430,face:0});this.sree=S.person("SREEDEV",{x:90,y:446,face:0,label:true});
+    G.showClock=true;this.z=1.55;this.cam={x:300,y:380};this.dev=S.person("ANAMIKA",{label:true,x:160,y:430,face:0});this.sree=S.person("SREEDEV",{x:90,y:446,face:0,label:true});
     this.foot=[];this.target=-1;this.res=null;this.surf=0;this.surfTarget=0;this.dog={x:1000,y:470,pet:0,wag:0,dir:-1,tx:null};this.shell={x:3260,y:455,taken:true};this.fog=0;this.fogOn=false;this.dogCb=null;this.canPet=false;this.canShell=false;this.petCb=null;this.shellCb=null;this.sitting=false;this.shoot=0;this.hintT=0;this.walkingNow=false;
     this.fire=Array.from({length:40},(_,i)=>({x:hash(i)*BW,y:hash(i+9)*640,p:hash(i+3)*6}));G.chapter(9,"Saint Andrews Beach");A.setMusic("night");A.waves(true);
   },
@@ -179,7 +179,7 @@ S.Beach={
 S.Restaurant={
   enter(o){
     o=o||{};this.kind=o.kind||"istanbul";G.showClock=true;
-    this.dev=S.person("ANAMIKA",{x:520,y:380,face:0,seat:true});this.sree=S.person("SREEDEV",{x:780,y:380,face:Math.PI,seat:true,label:true});
+    this.dev=S.person("ANAMIKA",{label:true,x:520,y:380,face:0,seat:true});this.sree=S.person("SREEDEV",{x:780,y:380,face:Math.PI,seat:true,label:true});
     G.chapter(9,this.kind==="istanbul"?"Istanbul Rolls & Grills":"Waffles");A.setMusic("warm");
     this.others=Array.from({length:6},(_,i)=>{const n=S.person(["NAVYA","SIDHU","VENDOR"][i%3],{x:[180,300,1060,1160,200,1100][i],y:[200,500,210,520,600,330][i],face:[0,Math.PI,Math.PI,0,0,Math.PI][i],seat:true});n.shirt=["#3b6ea5","#8a4f7d","#4f8a6b","#b5654a","#555b6e","#c79a3a"][i];return n});
     this.waiter=S.person("VENDOR",{x:900,y:640,face:Math.PI,pose:"walk"});this.wt=0;
@@ -226,7 +226,7 @@ S.Restaurant={
    ===================================================================== */
 S.Visitors={
   enter(){
-    G.showClock=true;this.dev=S.person("ANAMIKA",{x:500,y:330,face:0});this.sree=S.person("SREEDEV",{x:420,y:340,face:0,label:true});this.bro=S.person("SIDHU",{x:1300,y:430,vis:false,face:Math.PI,label:true});
+    G.showClock=true;this.dev=S.person("ANAMIKA",{label:true,x:500,y:330,face:0});this.sree=S.person("SREEDEV",{x:420,y:340,face:0,label:true});this.bro=S.person("SIDHU",{x:1300,y:430,vis:false,face:Math.PI,label:true});
     this.carX=-260;this.carV=0;this.carOn=false;this.leaving=false;this.doorGlow=0;this._ar=null;G.chapter(10,"Visitors' Area");A.setMusic("night");
   },
   arrive(){this.carOn=true;this.carV=300;A.sfx("whoosh");return new Promise(r=>{this._ar=r})},

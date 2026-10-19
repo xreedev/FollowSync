@@ -162,7 +162,7 @@ S.Loop={
   enter(o){
     if(!this.pts)this.buildRing();G.showClock=true;G.chapter(5,"Three Rounds of Nila");
     this.s=0;this.v=0;this.lap=0;this.next=1;this.done=false;this.res=null;this.laps=3;this.gap=60;this.sg=0;this.hold=0;this.flash=0;this.msg="";this.msgT=0;
-    this.dev=S.person("ANAMIKA",{});this.sree=S.person("SREEDEV",{label:true});
+    this.dev=S.person("ANAMIKA",{label:true,});this.sree=S.person("SREEDEV",{label:true});
     this.bg=S.cache(1280,720,(g)=>this.paint(g));A.setMusic("ride");
   },
   paint(g){

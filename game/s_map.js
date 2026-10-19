@@ -360,7 +360,7 @@ S.Office={
     for(const k in TEX)PAT[k]=ctx.createPattern(TEX[k],"repeat");
     const sp=o.spawn||[700,330];this.z=o.z||2.1;this.cam={x:sp[0],y:sp[1]};
     const king=NPCS.find(n=>n.king);
-    this.dev=S.person("ANAMIKA",{x:sp[0],y:sp[1],face:Math.PI/2});
+    this.dev=S.person("ANAMIKA",{label:true,x:sp[0],y:sp[1],face:Math.PI/2});
     this.sree=S.person("SREEDEV",{x:king.x,y:king.y,face:0,seat:true,label:true});
     this.navya=S.person("NAVYA",{x:1210,y:520,vis:false,face:Math.PI,label:true});
     this.control=!!o.control;this.path=null;this.goal=null;this.lit=0;this.pr={};this.minY=WORLD[1];this.eWas=false;this.res=null;this.autoRes=null;this.t0=G.t;
